@@ -1,75 +1,18 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <title>背景顏色示範</title>
-  <style>
-    /* 去掉預設白邊，讓背景覆蓋整頁 */
-    body { margin:0; background-color:#DCB5FF; }
-    .center { text-align:center; margin: 2rem 0; }
-  </style>
-</head>
-
-  <body>
-  <style>
-    .center { text-align:center; margin: 2rem 0; }
-    .downloads { max-width: 800px; margin: 0 auto; }
-    .downloads li { margin: .5rem 0; }
-    .updated { color: #444; opacity:.8; font-size:.95rem; margin-left:.5rem; }
-  </style>
-
-  <h2 class="center">嗨我是小潘，歡迎來到我的個人網站，在這裡可以找到關於我的物理學筆記、鋼琴樂譜、參考書</h2>
-
-  <ul class="downloads">
+<ul class="downloads">
   <li>
     <a href="downloads/Classical-Electrodynamic.pdf" target="_blank" rel="noopener">
       《古典電磁學（更新中）》PDF
     </a>
-    <!-- 這裡的 data-repo-path 要填「在 Repo 裡的實際路徑」 -->
-    <span class="updated" data-repo-path="downloads/Classical-Electrodynamic.pdf">（更新查詢中…）</span>
+    <!-- 檢查：如果真實檔名是 Classical-Electrodynamics.pdf，這兩個地方都要改成有 s -->
+    <span class="updated"
+          data-repo-path="downloads/Classical-Electrodynamic.pdf"
+          data-file="downloads/Classical-Electrodynamic.pdf">（更新查詢中…）</span>
   </li>
+
   <li>
-    <a href="downloads/master.pdf" target="_blank" rel="noopener">
-      《碩士論文》PDF
-    </a>
-    <!-- 這裡的 data-repo-path 要填「在 Repo 裡的實際路徑」 -->
-    <span class="updated" data-repo-path="downloads/master.pdf">（更新查詢中…）</span>
+    <a href="downloads/master.pdf" target="_blank" rel="noopener">《碩士論文》PDF</a>
+    <span class="updated"
+          data-repo-path="downloads/master.pdf"
+          data-file="downloads/master.pdf">（更新查詢中…）</span>
   </li>
-  <!-- 之後新增檔案就複製一個 li，改 data-repo-path 和連結即可 -->
 </ul>
-
-<script>
-  // 依你的帳號與倉庫名稱調整
-  const GH_OWNER = "smallpan0423";
-  const GH_REPO  = "smallpan0423.github.io"; // 若用 docs/ 發佈，這裡仍是 repo 名
-
-  const fmt = new Intl.DateTimeFormat('zh-TW', {
-    dateStyle: 'medium', timeStyle: 'short', hour12: false, timeZone: 'Asia/Taipei'
-  });
-
-  async function lastCommitDate(repoPath) {
-    const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
-    const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
-    if (!res.ok) throw new Error('GitHub API error');
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) throw new Error('No commits for file');
-    const d = data[0].commit.committer?.date || data[0].commit.author?.date;
-    return new Date(d);
-  }
-
-  // 逐一填入「PDF 上傳/更新時間」
-  document.querySelectorAll('.updated[data-repo-path]').forEach(async el => {
-    const path = el.getAttribute('data-repo-path');
-    try {
-      const d = await lastCommitDate(path);
-      el.textContent = `（更新：${fmt.format(d)}）`;
-    } catch (e) {
-      // 失敗就不顯示（或改成 fallback：HEAD 讀 Last-Modified）
-      el.textContent = '';
-    }
-  });
-</script>
-
-</body>
-
-</html>
