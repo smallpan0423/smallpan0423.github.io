@@ -1,0 +1,51 @@
+name: Build file update times
+
+on:
+  push:
+    branches: [ main ]             # 若不是 main 請改成你的預設分支
+    paths:
+      - 'downloads/**'             # 只有 downloads/ 變動才觸發（避免自觸發迴圈）
+      - '.github/workflows/update-times.yml'
+  workflow_dispatch:                # 手動觸發（可在 Actions 介面按下去）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0           # 需要完整 git 歷史取最後提交時間
+
+      - name: Generate updates.json
+        run: |
+          set -euo pipefail
+          OUT="updates.json"       # 如果你的 Pages 指向 docs/，改成 OUT="docs/updates.json"
+          mkdir -p "$(dirname "$OUT")"
+          echo "{" > "$OUT"
+          first=1
+          # 列出要追蹤的檔案（可依需要加副檔名）
+          mapfile -t files < <(git ls-files 'downloads/**/*.pdf' 'downloads/*.pdf' | sort)
+          for f in "${files[@]}"; do
+            ts="$(git log -1 --format=%cI -- "$f" || true)"  # ISO 8601
+            [ -z "$ts" ] && ts="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            if [ $first -eq 0 ]; then echo "," >> "$OUT"; else first=0; fi
+            printf '  "%s": "%s"' "$f" "$ts" >> "$OUT"
+          done
+          echo "" >> "$OUT"
+          echo "}" >> "$OUT"
+          echo "Generated $OUT:"
+          cat "$OUT"
+
+      - name: Commit updates.json if changed
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates.json  # 如果上面改成 docs/updates.json，這裡也要改
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: refresh updates.json"
+            git push
+          fi
