@@ -2,7 +2,7 @@ name: Build downloads manifest
 
 on:
   push:
-    branches: [ main ]     # 主分支是 master 就改成 master
+    branches: [ main ]
     paths:
       - 'downloads/**'
       - 'docs/downloads/**'
@@ -13,117 +13,97 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 讓 github-actions[bot] 可以 push
+      contents: write
 
     steps:
-      - name: Checkout (full history)
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Detect Pages source
-        id: detect
+      - name: Generate downloads.json (root & docs)
         run: |
-          # 判斷站台根目錄（Root 或 docs）
-          if [ -d "docs" ]; then
-            # 檢查 repo 是否用 docs 作為 Pages 目錄（粗略：有 docs/ 也當作可能）
-            echo "site_dir=docs" >> $GITHUB_OUTPUT
-          else
-            echo "site_dir=" >> $GITHUB_OUTPUT
-          fi
-          echo "Pages site_dir: '${{ steps.detect.outputs.site_dir }}'"
-
-      - name: Show repo tree
-        run: |
-          echo "::group::git status"; git status; echo "::endgroup::"
-          echo "::group::ls -R"; ls -lah; echo "::endgroup::"
-
-      - name: Generate downloads.json
-        run: |
-          set -euo pipefail
           python3 - <<'PY'
-          import json, os, subprocess
+          import os, json, sys
           from pathlib import Path
+          from datetime import datetime, timezone
+          import subprocess
 
-          # 找出「站台根目錄」：'' (root) 或 'docs'
-          site_dir = os.environ.get('SITE_DIR','').strip()
-          # 兩種可能的 downloads 來源（repo 內實體路徑）
-          candidates = []
-          if site_dir:
-              candidates.append(Path(site_dir) / 'downloads')
-          candidates.append(Path('downloads'))
+          owner = os.environ.get('GITHUB_REPOSITORY_OWNER','')
+          root = Path('.').resolve()
 
-          files = []
-          for base in candidates:
-              if base.is_dir():
-                  # 列出被 git 追蹤的檔案（避免抓到未追蹤）
-                  out = subprocess.check_output(
-                      ["git","ls-files", str(base) + "/**"],
-                      text=True
-                  ).splitlines()
-                  for f in out:
-                      p = Path(f)
-                      if p.is_file():
-                          files.append(p)
+          # 兩個來源資料夾：repo 根的 downloads/、及 docs/downloads/
+          bases = []
+          for p in [root/'downloads', root/'docs'/'downloads']:
+            if p.is_dir():
+              bases.append(p)
+
+          def last_commit_iso(repo_path:str)->str:
+            """拿最後一次 commit 時間；失敗就回檔案修改時間"""
+            try:
+              r = subprocess.run(
+                ['git','log','-1','--format=%cI','--', repo_path],
+                capture_output=True, text=True, check=False
+              )
+              iso = (r.stdout or '').strip()
+              if iso:
+                return iso
+            except Exception:
+              pass
+            # fallback：檔案 mtime（UTC ISO8601）
+            ts = Path(repo_path).stat().st_mtime
+            return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
           items = []
-          for p in files:
-              try:
-                  size = p.stat().st_size
-              except FileNotFoundError:
-                  continue
-
-              # 把「repo 中的實體路徑」換成「網站路徑」
-              # 若使用 docs 作為站台根，網站上看不到 'docs/' 這層
-              repo_path = str(p).replace("\\","/")
-              if site_dir and repo_path.startswith(site_dir + "/"):
-                  web_path = repo_path[len(site_dir)+1:]  # 去掉 'docs/'
+          for base in bases:
+            for p in base.rglob('*'):
+              if not p.is_file():
+                continue
+              # 網站上的路徑：docs 站台要把 'docs/' 去掉
+              repo_rel = p.relative_to(root).as_posix()
+              if repo_rel.startswith('docs/'):
+                web_path = repo_rel[len('docs/'):]
               else:
-                  web_path = repo_path
+                web_path = repo_rel
 
-              # 分類：取 downloads/ 之後的第一層資料夾
-              rel = web_path.split("/")
-              folder = "misc"
-              if len(rel) >= 2 and rel[0] == "downloads":
-                  folder = rel[1] if len(rel) >= 2 else "misc"
+              # 分類：downloads/ 底下第一層資料夾
+              parts = web_path.split('/')
+              folder = 'misc'
+              if len(parts)>=2 and parts[0]=='downloads':
+                folder = parts[1]
 
-              # 最後一次提交時間（ISO 8601）
-              dt = subprocess.check_output(
-                  ["git","log","-1","--format=%cI","--", repo_path], text=True
-              ).strip()
+              # 取時間與大小
+              updated = last_commit_iso(repo_rel)
+              size = p.stat().st_size
 
               items.append({
-                  "path": web_path,                     # 網站可用相對路徑
-                  "name": Path(web_path).name,          # 顯示名稱（預設檔名）
-                  "folder": folder,                     # 分類
-                  "size": size,                         # 位元組
-                  "updated": dt,                        # 最後 commit 時間（ISO）
-                  "url": f"https://{os.environ['GH_USER']}.github.io/{web_path}".replace(" ", "%20")
+                'path': web_path,
+                'name': p.name,
+                'folder': folder,
+                'size': size,
+                'updated': updated,
+                'url': f'https://{owner}.github.io/{web_path}'.replace(' ', '%20')
               })
 
-          items.sort(key=lambda x: x["updated"], reverse=True)
+          # 依更新時間新到舊
+          items.sort(key=lambda x: x['updated'], reverse=True)
 
-          # 下載清單輸出在「站台根目錄」：
-          # root → downloads.json
-          # docs → docs/downloads.json （對外網址都是 /downloads.json）
-          out_path = Path("downloads.json") if not site_dir else Path(site_dir)/"downloads.json"
-          out_path.parent.mkdir(parents=True, exist_ok=True)
-          with open(out_path, "w", encoding="utf-8") as w:
-              json.dump(items, w, ensure_ascii=False, indent=2)
+          # 同時產生兩份（root 與 docs）
+          out_root = root / 'downloads.json'
+          out_docs = root / 'docs' / 'downloads.json'
+          out_docs.parent.mkdir(parents=True, exist_ok=True)
 
-          print(f"Wrote {out_path} with {len(items)} items")
+          for out in [out_root, out_docs]:
+            with open(out, 'w', encoding='utf-8') as f:
+              json.dump(items, f, ensure_ascii=False, indent=2)
+            print(f'Wrote {out} with {len(items)} items')
+
           PY
-        env:
-          SITE_DIR: ${{ steps.detect.outputs.site_dir }}
-          GH_USER:  ${{ github.repository_owner }}
 
-      - name: Commit downloads.json if changed
+      - name: Commit manifest if changed
         run: |
           set -e
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads.json docs/downloads.json 2>/dev/null || true
-          echo "::group::git status after add"; git status; echo "::endgroup::"
+          git add downloads.json docs/downloads.json || true
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
