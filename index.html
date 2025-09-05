@@ -9,7 +9,7 @@
     .center { text-align:center; margin: 2rem 0; }
   </style>
 </head>
-<body>
+<!-- <body>
   <p class="center">嗨我是小潘，歡迎來到我的個人網站，在這裡可以找到關於我的物理學筆記、鋼琴樂譜、參考書</p>
 
   <p class="center">
@@ -36,5 +36,59 @@
   document.getElementById('last-updated').textContent = `最後更新：${text}`;
 </script>
 
+</body> -->
+
+  <body>
+  <style>
+    .center { text-align:center; margin: 2rem 0; }
+    .downloads { max-width: 800px; margin: 0 auto; }
+    .downloads li { margin: .5rem 0; }
+    .updated { color: #444; opacity:.8; font-size:.95rem; margin-left:.5rem; }
+  </style>
+
+  <h2 class="center">可下載/預覽檔案</h2>
+
+  <ul class="downloads">
+    <li>
+      <a href="downloads/Classical-Electrodynamics.pdf"
+         target="_blank" rel="noopener">
+        線上預覽《古典電磁學（更新中）》PDF
+      </a>
+      <span class="updated" data-file="downloads/Classical-Electrodynamics.pdf">（更新查詢中…）</span>
+    </li>
+
+    <!-- 之後新增檔案就複製下面這個 li，改兩個地方的路徑即可 -->
+    <!--
+    <li>
+      <a href="downloads/another-file.pdf" target="_blank" rel="noopener">預覽 another-file.pdf</a>
+      <span class="updated" data-file="downloads/another-file.pdf">（更新查詢中…）</span>
+    </li>
+    -->
+  </ul>
+
+  <script>
+    // 將 data-file 指向的檔案做 HEAD，讀取 Last-Modified
+    const tz = 'Asia/Taipei';
+    const fmt = new Intl.DateTimeFormat('zh-TW', {
+      dateStyle: 'medium', timeStyle: 'short', hour12: false, timeZone: tz
+    });
+
+    document.querySelectorAll('.updated[data-file]').forEach(async (el) => {
+      const url = el.getAttribute('data-file');
+      try {
+        const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        const lm = res.headers.get('last-modified');
+        if (lm) {
+          const d = new Date(lm);
+          el.textContent = `（更新：${fmt.format(d)}）`;
+        } else {
+          el.textContent = ''; // 沒有標頭就不顯示
+        }
+      } catch (e) {
+        el.textContent = '';   // 失敗就不顯示
+      }
+    });
+  </script>
 </body>
+
 </html>
