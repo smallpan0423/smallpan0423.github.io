@@ -10,10 +10,7 @@
     .downloads li { margin: .6rem 0; }
     .updated { color:#444; opacity:.85; margin-left:.5rem; font-size:.95rem; }
     .filters.center { margin-top: .5rem; }
-    .tag {
-      display:inline-block; margin:.25rem; padding:.4rem .8rem; border-radius:999px;
-      border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer;
-    }
+    .tag { display:inline-block; margin:.25rem; padding:.4rem .8rem; border-radius:999px; border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer; }
     .tag.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
     .hidden { display:none !important; }
   </style>
@@ -24,243 +21,117 @@
 
   <!-- 分類按鈕 -->
   <nav class="filters center" aria-label="檔案分類">
-  <button type="button" class="tag active" data-cat="all">全部</button>
-  <button type="button" class="tag" data-cat="em">四大力學筆記</button>
-  <button type="button" class="tag" data-cat="math">數學筆記</button>
-  <button type="button" class="tag" data-cat="thesis">畢業論文</button>
-  <button type="button" class="tag" data-cat="misc">其他</button>
-</nav>
+    <button type="button" class="tag active" data-cat="all">全部</button>
+    <button type="button" class="tag" data-cat="em">四大力學筆記</button>
+    <button type="button" class="tag" data-cat="math">數學筆記</button>
+    <button type="button" class="tag" data-cat="thesis">畢業論文</button>
+    <button type="button" class="tag" data-cat="misc">其他</button>
+  </nav>
 
+  <!-- 檔案清單（交給 JS 產生） -->
+  <ul class="downloads" id="fileList"></ul>
 
-  <!-- 檔案清單 -->
-  <ul class="downloads" id="fileList">
-    <li data-folder="em">
-      <a href="downloads/Classical-Electrodynamics.pdf" target="_blank" rel="noopener">
-        《古典電磁學（更新中）》PDF
-      </a>
-      <span class="updated"
-            data-repo-path="downloads/Classical-Electrodynamics.pdf"
-            data-file="downloads/Classical-Electrodynamics.pdf">（更新查詢中…）</span>
-    </li>
-
-    <li data-folder="thesis">
-      <a href="downloads/master.pdf" target="_blank" rel="noopener">
-        《碩士論文》PDF
-      </a>
-      <span class="updated"
-            data-repo-path="downloads/master.pdf"
-            data-file="downloads/master.pdf">（更新查詢中…）</span>
-    </li>
-  </ul>
-
-
-
-  <script>
-  // 分類功能
-  const buttons = document.querySelectorAll('.filters .tag');
-  const items   = document.querySelectorAll('#fileList > li');
-
-  function applyFilter(cat) {
-    items.forEach(li => {
-      li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
-    });
-    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-    if (cat === 'all') history.replaceState(null, '', location.pathname);
-    else location.hash = `cat=${cat}`;
-  }
-
-  // 點擊切換分類
-  buttons.forEach(btn => btn.addEventListener('click', () => {
-    applyFilter(btn.dataset.cat);
-  }));
-
-  // 讀取網址 hash（例如 #cat=thesis）
-  (function initFromHash(){
-    const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
-    applyFilter(m ? m[1] : 'all');
-  })();
-</script>
-
- <script>
-  const GH_OWNER  = "smallpan0423";
-  const GH_REPO   = "smallpan0423.github.io";
-  const GH_BRANCH = "main"; // 若你的預設分支是 master 就改成 master
-
-  const fmt = new Intl.DateTimeFormat('zh-TW', {
-    dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
-  });
-
-  // 簡單快取（localStorage），避免每次開頁都打 API
-  const CACHE_KEY   = 'gh_updates_cache_v1';
-  const CACHE_TTLMS = 12 * 60 * 60 * 1000; // 12 小時
-  let cache = {};
-  try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
-
-  async function fetchCommitTime(repoPath) {
-    const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits` +
-                `?path=${encodeURIComponent(repoPath)}&per_page=1&sha=${encodeURIComponent(GH_BRANCH)}`;
-    const res = await fetch(api, {
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const arr = await res.json();
-    if (!Array.isArray(arr) || arr.length === 0) throw new Error('EMPTY');
-    const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
-    return new Date(iso);
-  }
-
-  async function getUpdatedDate(repoPath) {
-    const now = Date.now();
-    const rec = cache[repoPath];
-    if (rec && (now - rec.t) < CACHE_TTLMS) return new Date(rec.iso);
-
-    const d = await fetchCommitTime(repoPath);
-    cache[repoPath] = { iso: d.toISOString(), t: now };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-    return d;
-  }
-
-  // 依序處理，避免同時太多請求
-  (async () => {
-    const els = [...document.querySelectorAll('.updated[data-repo-path]')];
-    for (const el of els) {
-      const path = el.dataset.repoPath; // 務必是 repo 內「真實路徑」，大小寫完全一致
-      try {
-        const d = await getUpdatedDate(path);
-        el.textContent = `（更新：${fmt.format(d)}）`;
-      } catch (e) {
-        el.textContent = '（更新時間取得失敗）';
-        console.warn('更新時間取得失敗：', path, e);
-      }
-      // 小延遲，更保險（可調整或拿掉）
-      await new Promise(r => setTimeout(r, 150));
-    }
-  })();
-</script>
-
-
-  <script>
-  // 讓「原本指向 downloads/*.pdf 的預覽連結」自動在行動 in-app/大檔時走 Google Viewer
-  const ua = navigator.userAgent;
-  const inApp = /FBAN|FBAV|Instagram|Line\//i.test(ua);
-  const iOS   = /iPhone|iPad|iPod/i.test(ua);
-  const BIG_MB = 50;
-
-  function toGView(absUrl) {
-    return 'https://docs.google.com/viewer?embedded=1&url=' + encodeURIComponent(absUrl);
-  }
-
-  // 幫 #fileList 內所有 <a target=_blank> 指向 pdf 的連結加強
-  (async () => {
-    const links = [...document.querySelectorAll('#fileList a[target="_blank"]')].filter(a => /\.pdf(\?|$)/i.test(a.href));
-    for (const a of links) {
-      // 產生絕對網址（給 Google Viewer 用）
-      const abs = new URL(a.getAttribute('href'), location.origin).href;
-
-      if (inApp) { a.href = toGView(abs); continue; }
-
-      // iOS 對超大 PDF 容易失敗 → HEAD 看檔案大小，超過門檻改用 GView
-      if (iOS) {
-        try {
-          const r = await fetch(a.getAttribute('href'), { method:'HEAD', cache:'no-store' });
-          const len = +(r.headers.get('content-length') || 0);
-          if (len && len > BIG_MB * 1024 * 1024) {
-            a.href = toGView(abs);
-          }
-        } catch { /* 忽略錯誤，保留原連結 */ }
-      }
-    }
-  })();
-</script>
-
+  <!-- 直接連到 GitHub 上傳資料夾 -->
   <p class="center">
-  <a href="https://github.com/smallpan0423/smallpan0423.github.io/upload/main/downloads"
-     target="_blank" rel="noopener">
-    上傳新檔到 downloads/
-  </a>
-</p>
+    <a href="https://github.com/smallpan0423/smallpan0423.github.io/upload/main/downloads" target="_blank" rel="noopener">
+      上傳新檔到 downloads/
+    </a>
+  </p>
 
-<script>
-  // 若 workflow 輸出在 docs/，改成 'docs/downloads.json'
-  const MANIFEST_URL = 'downloads.json';
+  <script>
+    // ===== 設定：downloads.json 的位置（docs/ 發佈就改成 'docs/downloads.json'） =====
+    const MANIFEST_URL = 'downloads.json';
 
-  // 分類功能（如果你之前已加，就不用重複）
-  const buttons = document.querySelectorAll('.filters .tag');
-  const listEl  = document.getElementById('fileList');
+    // ===== 分類功能（只保留這一份） =====
+    const buttons = document.querySelectorAll('.filters .tag');
+    const listEl  = document.getElementById('fileList');
 
-  function applyFilter(cat) {
-    [...listEl.children].forEach(li => {
-      li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
-    });
-    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-    if (cat === 'all') history.replaceState(null,'',location.pathname);
-    else location.hash = `cat=${cat}`;
-  }
-  buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
-
-  // 讀取清單並渲染
-  (async () => {
-    const fmt = new Intl.DateTimeFormat('zh-TW', {
-      dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
-    });
-    try {
-      const res = await fetch(MANIFEST_URL, { cache:'no-store' });
-      const items = await res.json(); // [{path,name,folder,size,updated,url}]
-      const frag = document.createDocumentFragment();
-
-      for (const it of items) {
-        const li = document.createElement('li');
-        li.dataset.folder = it.folder || 'misc';
-
-        // 顯示名稱：預設用檔名；若想客製，這裡可加一個對照表
-        const title = it.name;
-
-        // 預覽（新分頁）
-        const a = document.createElement('a');
-        a.href = it.path; a.target = '_blank'; a.rel = 'noopener';
-        a.textContent = title;
-        li.appendChild(a);
-
-        // 更新時間
-        const span = document.createElement('span');
-        span.className = 'updated';
-        span.textContent = `（更新：${fmt.format(new Date(it.updated))}）`;
-        li.appendChild(span);
-
-        // 檔案大小（MB）
-        const mb = (it.size/1024/1024).toFixed(2);
-        const sz = document.createElement('span');
-        sz.textContent = ` · ${mb} MB`;
-        li.appendChild(sz);
-
-        // 下載（可選）
-        const dl = document.createElement('a');
-        dl.href = it.path; dl.download = it.name; dl.style.marginLeft = '.5rem';
-        dl.textContent = '下載';
-        li.appendChild(dl);
-
-        frag.appendChild(li);
-      }
-      listEl.innerHTML = '';
-      listEl.appendChild(frag);
-
-      // 從網址 hash 套用預設分類（例如 #cat=thesis）
-      const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
-      applyFilter(m ? m[1] : 'all');
-    } catch (e) {
-      listEl.innerHTML = '<li>清單載入失敗，請稍後重試。</li>';
-      console.error('載入 downloads.json 失敗：', e);
+    function applyFilter(cat) {
+      [...listEl.children].forEach(li => {
+        li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
+      });
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+      if (cat === 'all') history.replaceState(null,'',location.pathname);
+      else location.hash = `cat=${cat}`;
     }
-  })();
-</script>
+    buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
 
+    // ===== 手機/內建瀏覽器 PDF 預覽加強：渲染後套用 =====
+    function enhancePdfLinks(container){
+      const ua = navigator.userAgent;
+      const inApp = /FBAN|FBAV|Instagram|Line\//i.test(ua);
+      const iOS   = /iPhone|iPad|iPod/i.test(ua);
+      const BIG_MB = 50;
+      const toGView = abs => 'https://docs.google.com/viewer?embedded=1&url=' + encodeURIComponent(abs);
 
+      (async () => {
+        const links = [...container.querySelectorAll('a[target="_blank"]')].filter(a => /\.pdf(\?|$)/i.test(a.href));
+        for (const a of links) {
+          const abs = new URL(a.getAttribute('href'), location.origin).href;
+          if (inApp) { a.href = toGView(abs); continue; }
+          if (iOS) {
+            try {
+              const r = await fetch(a.getAttribute('href'), { method:'HEAD', cache:'no-store' });
+              const len = +(r.headers.get('content-length') || 0);
+              if (len && len > BIG_MB * 1024 * 1024) a.href = toGView(abs);
+            } catch {}
+          }
+        }
+      })();
+    }
 
+    // ===== 載入 downloads.json 並渲染清單 =====
+    (async () => {
+      const fmt = new Intl.DateTimeFormat('zh-TW', { dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei' });
+      try {
+        const res = await fetch(MANIFEST_URL, { cache:'no-store' });
+        const items = await res.json(); // [{path,name,folder,size,updated,url}]
+        const frag = document.createDocumentFragment();
 
+        for (const it of items) {
+          const li = document.createElement('li');
+          li.dataset.folder = it.folder || 'misc';
 
+          // 預覽（新分頁）
+          const a = document.createElement('a');
+          a.href = it.path; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = it.name;      // 需要顯示中文標題可在 Actions 端加 mapping
+          li.appendChild(a);
+
+          // 更新時間
+          const span = document.createElement('span');
+          span.className = 'updated';
+          span.textContent = `（更新：${fmt.format(new Date(it.updated))}）`;
+          li.appendChild(span);
+
+          // 檔案大小（MB）
+          const sz = document.createElement('span');
+          sz.textContent = ` · ${(it.size/1024/1024).toFixed(2)} MB`;
+          li.appendChild(sz);
+
+          // 下載按鈕（可選）
+          const dl = document.createElement('a');
+          dl.href = it.path; dl.download = it.name; dl.style.marginLeft = '.5rem';
+          dl.textContent = '下載';
+          li.appendChild(dl);
+
+          frag.appendChild(li);
+        }
+
+        listEl.innerHTML = '';
+        listEl.appendChild(frag);
+
+        // 套用分類（支援 #cat=thesis）
+        const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
+        applyFilter(m ? m[1] : 'all');
+
+        // 最後：讓 PDF 連結具備行動裝置預覽相容性
+        enhancePdfLinks(listEl);
+      } catch (e) {
+        listEl.innerHTML = '<li>清單載入失敗，請稍後重試。</li>';
+        console.error('載入 downloads.json 失敗：', e);
+      }
+    })();
+  </script>
 </body>
 </html>
