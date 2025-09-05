@@ -46,7 +46,7 @@
   </li>
 </ul>
 
-<script>
+<!-- <script>
   // 依你的帳號與倉庫名稱調整
   const GH_OWNER = "smallpan0423";
   const GH_REPO  = "smallpan0423.github.io"; // 若用 docs/ 發佈，這裡仍是 repo 名
@@ -76,4 +76,52 @@
       el.textContent = '';
     }
   });
+</script> -->
+
+
+
+    <script>
+  const GH_OWNER = "smallpan0423";
+  const GH_REPO  = "smallpan0423.github.io";
+
+  const fmt = new Intl.DateTimeFormat('zh-TW', {
+    dateStyle: 'medium', timeStyle: 'short', hour12: false, timeZone: 'Asia/Taipei'
+  });
+
+  async function fetchCommitTime(repoPath) {
+    const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
+    const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const arr = await res.json();
+    if (!arr?.length) throw new Error('No commits');
+    const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
+    return new Date(iso);
+  }
+
+  async function fetchLastModified(url) {
+    const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+    if (!r.ok) throw new Error(`HEAD ${r.status}`);
+    const lm = r.headers.get('last-modified');
+    if (!lm) throw new Error('No Last-Modified');
+    return new Date(lm);
+  }
+
+  async function setUpdated(el) {
+    const repoPath = el.dataset.repoPath;   // repo 裡的實際路徑
+    const fileUrl  = el.dataset.file;       // 網站連結（通常與 href 相同）
+    try {
+      const d = await fetchCommitTime(repoPath);
+      el.textContent = `（更新：${fmt.format(d)}）`;
+    } catch (e1) {
+      try {
+        const d2 = await fetchLastModified(fileUrl);
+        el.textContent = `（更新：${fmt.format(d2)}）`;
+      } catch (e2) {
+        el.textContent = '（無法取得更新時間）';
+        console.warn('更新時間取得失敗：', repoPath, e1, e2);
+      }
+    }
+  }
+
+  document.querySelectorAll('.updated[data-repo-path][data-file]').forEach(setUpdated);
 </script>
