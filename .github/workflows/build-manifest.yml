@@ -1,4 +1,4 @@
-name: Build downloads manifest
+name: Build file update times
 
 on:
   push:
@@ -18,29 +18,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 取完整歷史，比較不會在 git log 爆掉
 
-      - name: Generate downloads.json (root & docs)
+      - name: Generate downloads.json (root & docs, PDF only)
         run: |
+          set -e
           python3 - <<'PY'
           import os, json, sys
           from pathlib import Path
           from datetime import datetime, timezone
-          import subprocess
+          import subprocess, shlex
 
-          owner = os.environ.get('GITHUB_REPOSITORY_OWNER','')
           root = Path('.').resolve()
 
-          # 兩個來源資料夾：repo 根的 downloads/、及 docs/downloads/
-          bases = []
-          for p in [root/'downloads', root/'docs'/'downloads']:
-            if p.is_dir():
-              bases.append(p)
+          # 取 owner：先 GH_OWNER，否則從 GITHUB_REPOSITORY 解析
+          owner = os.getenv('GH_OWNER')
+          if not owner:
+            repo_full = os.getenv('GITHUB_REPOSITORY','')
+            owner = repo_full.split('/')[0] if '/' in repo_full else ''
+          if not owner:
+            owner = 'username'  # safety fallback，不會讓腳本掛
 
-          def last_commit_iso(repo_path:str)->str:
-            """拿最後一次 commit 時間；失敗就回檔案修改時間"""
+          # 兩個來源：repo 根的 downloads/ 與 docs/downloads/
+          bases = [root/'downloads', root/'docs'/'downloads']
+
+          def safe_git_log(repo_rel: str) -> str:
+            """取最後一次 commit 時間；失敗則回檔案 mtime"""
             try:
               r = subprocess.run(
-                ['git','log','-1','--format=%cI','--', repo_path],
+                ['git','log','-1','--format=%cI','--', repo_rel],
                 capture_output=True, text=True, check=False
               )
               iso = (r.stdout or '').strip()
@@ -48,30 +55,32 @@ jobs:
                 return iso
             except Exception:
               pass
-            # fallback：檔案 mtime（UTC ISO8601）
-            ts = Path(repo_path).stat().st_mtime
+            p = Path(repo_rel)
+            ts = p.stat().st_mtime
             return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
           items = []
           for base in bases:
+            if not base.exists():
+              continue
             for p in base.rglob('*'):
               if not p.is_file():
                 continue
-              # 網站上的路徑：docs 站台要把 'docs/' 去掉
-              repo_rel = p.relative_to(root).as_posix()
-              if repo_rel.startswith('docs/'):
-                web_path = repo_rel[len('docs/'):]
-              else:
-                web_path = repo_rel
+              # 只收 PDF、略過隱藏檔
+              if p.name.startswith('.') or p.suffix.lower() != '.pdf':
+                continue
 
-              # 分類：downloads/ 底下第一層資料夾
+              repo_rel = p.relative_to(root).as_posix()
+              # 網站路徑：若是 docs 站檔，去掉前綴 'docs/'
+              web_path = repo_rel[5:] if repo_rel.startswith('docs/') else repo_rel
+
+              # 分類：downloads/ 之後的第一層（沒有就 misc）
               parts = web_path.split('/')
               folder = 'misc'
-              if len(parts)>=2 and parts[0]=='downloads':
+              if len(parts) >= 3 and parts[0] == 'downloads':
                 folder = parts[1]
 
-              # 取時間與大小
-              updated = last_commit_iso(repo_rel)
+              updated = safe_git_log(repo_rel)
               size = p.stat().st_size
 
               items.append({
@@ -86,17 +95,23 @@ jobs:
           # 依更新時間新到舊
           items.sort(key=lambda x: x['updated'], reverse=True)
 
-          # 同時產生兩份（root 與 docs）
+          # 同時輸出到 root 與 docs/，兩邊各放一份
           out_root = root / 'downloads.json'
           out_docs = root / 'docs' / 'downloads.json'
           out_docs.parent.mkdir(parents=True, exist_ok=True)
 
-          for out in [out_root, out_docs]:
+          for out in (out_root, out_docs):
             with open(out, 'w', encoding='utf-8') as f:
               json.dump(items, f, ensure_ascii=False, indent=2)
-            print(f'Wrote {out} with {len(items)} items')
+            print(f'[OK] Wrote {out} with {len(items)} items')
 
+          # 再把內容印出來，方便你在 log 直接看到
+          print('----- downloads.json -----')
+          print((out_root).read_text(encoding='utf-8'))
+          print('--------------------------')
           PY
+        env:
+          GH_OWNER: ${{ github.repository_owner }}
 
       - name: Commit manifest if changed
         run: |
