@@ -80,48 +80,95 @@
 
 
 
-    <script>
+   <!-- 分類按鈕 -->
+<nav class="filters center" aria-label="檔案分類">
+  <button class="tag active" data-cat="all">全部</button>
+  <button class="tag" data-cat="em">電磁學</button>
+  <button class="tag" data-cat="thesis">論文</button>
+  <button class="tag" data-cat="misc">其他</button>
+</nav>
+
+<!-- 檔案清單 -->
+<ul class="downloads" id="fileList">
+  <!-- 每個 li 用 data-folder 標記分類；data-repo-path 寫 repo 內的實際路徑 -->
+  <li data-folder="em">
+    <a href="downloads/Classical-Electrodynamics.pdf" target="_blank" rel="noopener">
+      《古典電磁學（更新中）》PDF
+    </a>
+    <span class="updated" data-repo-path="downloads/Classical-Electrodynamics.pdf">（更新查詢中…）</span>
+  </li>
+
+  <li data-folder="thesis">
+    <a href="downloads/master.pdf" target="_blank" rel="noopener">
+      《碩士論文》PDF
+    </a>
+    <span class="updated" data-repo-path="downloads/master.pdf">（更新查詢中…）</span>
+  </li>
+
+  <!-- 之後新增檔案就複製一個 li，改 href、data-repo-path 與 data-folder 即可 -->
+</ul>
+
+<style>
+  .center { text-align:center; margin: 1.5rem 0; }
+  .downloads { max-width: 900px; margin: 0 auto; padding: 0 1rem; }
+  .downloads li { margin: .6rem 0; }
+  .updated { color:#444; opacity:.85; margin-left:.5rem; font-size:.95rem; }
+  .tag {
+    display:inline-block; margin:.25rem; padding:.4rem .8rem; border-radius:999px;
+    border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer;
+  }
+  .tag.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
+  .hidden { display:none !important; }
+</style>
+
+<script>
+  // 你的 GitHub 帳號與 repo 名稱
   const GH_OWNER = "smallpan0423";
   const GH_REPO  = "smallpan0423.github.io";
 
+  // 1) 分類過濾
+  const buttons = document.querySelectorAll('.filters .tag');
+  const items   = document.querySelectorAll('#fileList > li');
+
+  function applyFilter(cat) {
+    items.forEach(li => {
+      li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
+    });
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    // 同步網址 hash，支援直接連到某分類
+    if (cat === 'all') history.replaceState(null, '', location.pathname);
+    else location.hash = `cat=${cat}`;
+  }
+
+  buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
+
+  // 讀取網址 hash 設定預設分類（例如 #cat=thesis）
+  (function initFilterFromHash(){
+    const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
+    applyFilter(m ? m[1] : 'all');
+  })();
+
+  // 2) 顯示「PDF 上傳/更新時間」（取最後一次 commit 時間）
   const fmt = new Intl.DateTimeFormat('zh-TW', {
-    dateStyle: 'medium', timeStyle: 'short', hour12: false, timeZone: 'Asia/Taipei'
+    dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
   });
 
-  async function fetchCommitTime(repoPath) {
+  async function lastCommitDate(repoPath) {
     const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
-    const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
-    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-    const arr = await res.json();
-    if (!arr?.length) throw new Error('No commits');
-    const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
-    return new Date(iso);
+    const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache:'no-store' });
+    if (!res.ok) throw new Error('GitHub API error');
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) throw new Error('No commits for file');
+    const d = data[0].commit.committer?.date || data[0].commit.author?.date;
+    return new Date(d);
   }
 
-  async function fetchLastModified(url) {
-    const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-    if (!r.ok) throw new Error(`HEAD ${r.status}`);
-    const lm = r.headers.get('last-modified');
-    if (!lm) throw new Error('No Last-Modified');
-    return new Date(lm);
-  }
-
-  async function setUpdated(el) {
-    const repoPath = el.dataset.repoPath;   // repo 裡的實際路徑
-    const fileUrl  = el.dataset.file;       // 網站連結（通常與 href 相同）
+  document.querySelectorAll('.updated[data-repo-path]').forEach(async (el) => {
     try {
-      const d = await fetchCommitTime(repoPath);
+      const d = await lastCommitDate(el.getAttribute('data-repo-path'));
       el.textContent = `（更新：${fmt.format(d)}）`;
-    } catch (e1) {
-      try {
-        const d2 = await fetchLastModified(fileUrl);
-        el.textContent = `（更新：${fmt.format(d2)}）`;
-      } catch (e2) {
-        el.textContent = '（無法取得更新時間）';
-        console.warn('更新時間取得失敗：', repoPath, e1, e2);
-      }
+    } catch {
+      el.textContent = ''; // 失敗就不顯示
     }
-  }
-
-  document.querySelectorAll('.updated[data-repo-path][data-file]').forEach(setUpdated);
+  });
 </script>
