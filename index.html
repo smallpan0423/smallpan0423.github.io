@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
-  <title>小潘的筆記與下載</title>
+  <title>小潘的筆記</title>
   <style>
     body { margin:0; background-color:#DCB5FF; font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; }
     .center { text-align:center; margin: 1.5rem 0; }
@@ -53,71 +53,37 @@
   </ul>
 
   <script>
-    // 你的 GitHub 帳號與 repo 名稱
-    const GH_OWNER = "smallpan0423";
-    const GH_REPO  = "smallpan0423.github.io"; // 若用 docs/ 發佈，這裡仍是 repo 名
+  const GH_OWNER = "smallpan0423";
+  const GH_REPO  = "smallpan0423.github.io";
 
-    // 1) 分類過濾
-    const buttons = document.querySelectorAll('.filters .tag');
-    const items   = document.querySelectorAll('#fileList > li');
+  const fmt = new Intl.DateTimeFormat('zh-TW', {
+    dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
+  });
 
-    function applyFilter(cat) {
-      items.forEach(li => {
-        li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
-      });
-      buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-      if (cat === 'all') history.replaceState(null, '', location.pathname);
-      else location.hash = `cat=${cat}`;
+  async function fetchCommitTime(repoPath) {
+    const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
+    const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache:'no-store' });
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const arr = await res.json();
+    if (!arr?.length) throw new Error('No commits');
+    const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
+    return new Date(iso);
+  }
+
+  async function setUpdated(el) {
+    const repoPath = el.dataset.repoPath;  // 這裡一定要寫「repo 裡的真實路徑」，含正確大小寫
+    try {
+      const d = await fetchCommitTime(repoPath);
+      el.textContent = `（更新：${fmt.format(d)}）`;
+    } catch (e) {
+      el.textContent = '（更新時間取得失敗）';
+      console.warn('更新時間取得失敗：', repoPath, e);
     }
+  }
 
-    buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
-    (function initFilterFromHash(){
-      const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
-      applyFilter(m ? m[1] : 'all');
-    })();
+  document.querySelectorAll('.updated[data-repo-path]').forEach(setUpdated);
+</script>
 
-    // 2) 顯示「PDF 上傳/更新時間」
-    const fmt = new Intl.DateTimeFormat('zh-TW', {
-      dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
-    });
-
-    async function fetchCommitTime(repoPath) {
-      const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
-      const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache:'no-store' });
-      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-      const arr = await res.json();
-      if (!arr?.length) throw new Error('No commits');
-      const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
-      return new Date(iso);
-    }
-
-    async function fetchLastModified(url) {
-      const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-      if (!r.ok) throw new Error(`HEAD ${r.status}`);
-      const lm = r.headers.get('last-modified');
-      if (!lm) throw new Error('No Last-Modified');
-      return new Date(lm);
-    }
-
-    async function setUpdated(el) {
-      const repoPath = el.dataset.repoPath;  // repo 內路徑（若用 docs 發佈→寫 docs/...）
-      const fileUrl  = el.dataset.file;      // 網站上的實際連結
-      try {
-        const d = await fetchCommitTime(repoPath);
-        el.textContent = `（更新：${fmt.format(d)}）`;
-      } catch (e1) {
-        try {
-          const d2 = await fetchLastModified(fileUrl);
-          el.textContent = `（更新：${fmt.format(d2)}）`;
-        } catch (e2) {
-          el.textContent = '（無法取得更新時間）';
-          console.warn('更新時間取得失敗：', repoPath, e1, e2);
-        }
-      }
-    }
-
-    document.querySelectorAll('.updated[data-repo-path][data-file]').forEach(setUpdated);
-  </script>
 
 </body>
 </html>
