@@ -143,6 +143,41 @@
 </script>
 
 
+  <script>
+  // 讓「原本指向 downloads/*.pdf 的預覽連結」自動在行動 in-app/大檔時走 Google Viewer
+  const ua = navigator.userAgent;
+  const inApp = /FBAN|FBAV|Instagram|Line\//i.test(ua);
+  const iOS   = /iPhone|iPad|iPod/i.test(ua);
+  const BIG_MB = 50;
+
+  function toGView(absUrl) {
+    return 'https://docs.google.com/viewer?embedded=1&url=' + encodeURIComponent(absUrl);
+  }
+
+  // 幫 #fileList 內所有 <a target=_blank> 指向 pdf 的連結加強
+  (async () => {
+    const links = [...document.querySelectorAll('#fileList a[target="_blank"]')].filter(a => /\.pdf(\?|$)/i.test(a.href));
+    for (const a of links) {
+      // 產生絕對網址（給 Google Viewer 用）
+      const abs = new URL(a.getAttribute('href'), location.origin).href;
+
+      if (inApp) { a.href = toGView(abs); continue; }
+
+      // iOS 對超大 PDF 容易失敗 → HEAD 看檔案大小，超過門檻改用 GView
+      if (iOS) {
+        try {
+          const r = await fetch(a.getAttribute('href'), { method:'HEAD', cache:'no-store' });
+          const len = +(r.headers.get('content-length') || 0);
+          if (len && len > BIG_MB * 1024 * 1024) {
+            a.href = toGView(abs);
+          }
+        } catch { /* 忽略錯誤，保留原連結 */ }
+      }
+    }
+  })();
+</script>
+
+
 
 
 
