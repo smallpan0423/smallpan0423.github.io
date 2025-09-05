@@ -1,0 +1,72 @@
+name: Build downloads manifest
+
+on:
+  push:
+    branches: [ main ]                # 若你的主分支是 master 就改成 master
+    paths:
+      - 'downloads/**'                # 只有 downloads/ 變動才跑，避免自觸發
+      - '.github/workflows/build-manifest.yml'
+  workflow_dispatch:                  # 也可手動觸發
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate downloads.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          # 列出所有被 git 追蹤的 downloads/ 檔案
+          files = subprocess.check_output(
+              ["git","ls-files","downloads/**"], text=True
+          ).splitlines()
+          items = []
+          for f in files:
+              p = Path(f)
+              if not p.is_file():      # 跳過資料夾
+                  continue
+              try:
+                  size = p.stat().st_size
+              except FileNotFoundError:
+                  continue
+              # 最後一次提交時間（ISO 8601）
+              dt = subprocess.check_output(
+                  ["git","log","-1","--format=%cI","--",f], text=True
+              ).strip()
+              # 取分類：downloads/<這個字>/xxx
+              parts = p.parts
+              folder = parts[1] if len(parts) > 1 else ""
+              items.append({
+                  "path": f,
+                  "name": p.name,
+                  "folder": folder,                        # 用來做分類
+                  "size": size,
+                  "updated": dt,
+                  "url": f"https://smallpan0423.github.io/{f}".replace(" ", "%20")
+              })
+          # 依更新時間新→舊
+          items.sort(key=lambda x: x["updated"], reverse=True)
+          with open("downloads.json","w",encoding="utf-8") as w:
+              json.dump(items, w, ensure_ascii=False, indent=2)
+          print("Wrote downloads.json with", len(items), "items")
+          PY
+
+      - name: Commit downloads.json if changed
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads.json
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore: refresh downloads.json"
+            git push
+          fi
