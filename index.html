@@ -40,7 +40,8 @@
 
   <script>
     // ===== 設定：downloads.json 的位置（docs/ 發佈就改成 'docs/downloads.json'） =====
-    const MANIFEST_URL = 'downloads.json';
+     const MANIFEST_URL = 'downloads.json?v=' + Date.now();
+// 若 Pages 來源是 docs/ 也 OK，因為我們兩邊都寫了;
 
     // ===== 分類功能（只保留這一份） =====
     const buttons = document.querySelectorAll('.filters .tag');
@@ -133,5 +134,7 @@
       }
     })();
   </script>
+ 
+
 </body>
 </html>
