@@ -2,20 +2,41 @@ name: Build downloads manifest
 
 on:
   push:
-    branches: [ main ]                # 若你的主分支是 master 就改成 master
+    branches: [ main ]     # 主分支是 master 就改成 master
     paths:
-      - 'downloads/**'                # 只有 downloads/ 變動才跑，避免自觸發
+      - 'downloads/**'
+      - 'docs/downloads/**'
       - '.github/workflows/build-manifest.yml'
-  workflow_dispatch:                  # 也可手動觸發
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 讓 github-actions[bot] 可以 push
+
     steps:
       - name: Checkout (full history)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Detect Pages source
+        id: detect
+        run: |
+          # 判斷站台根目錄（Root 或 docs）
+          if [ -d "docs" ]; then
+            # 檢查 repo 是否用 docs 作為 Pages 目錄（粗略：有 docs/ 也當作可能）
+            echo "site_dir=docs" >> $GITHUB_OUTPUT
+          else
+            echo "site_dir=" >> $GITHUB_OUTPUT
+          fi
+          echo "Pages site_dir: '${{ steps.detect.outputs.site_dir }}'"
+
+      - name: Show repo tree
+        run: |
+          echo "::group::git status"; git status; echo "::endgroup::"
+          echo "::group::ls -R"; ls -lah; echo "::endgroup::"
 
       - name: Generate downloads.json
         run: |
@@ -23,49 +44,88 @@ jobs:
           python3 - <<'PY'
           import json, os, subprocess
           from pathlib import Path
-          # 列出所有被 git 追蹤的 downloads/ 檔案
-          files = subprocess.check_output(
-              ["git","ls-files","downloads/**"], text=True
-          ).splitlines()
+
+          # 找出「站台根目錄」：'' (root) 或 'docs'
+          site_dir = os.environ.get('SITE_DIR','').strip()
+          # 兩種可能的 downloads 來源（repo 內實體路徑）
+          candidates = []
+          if site_dir:
+              candidates.append(Path(site_dir) / 'downloads')
+          candidates.append(Path('downloads'))
+
+          files = []
+          for base in candidates:
+              if base.is_dir():
+                  # 列出被 git 追蹤的檔案（避免抓到未追蹤）
+                  out = subprocess.check_output(
+                      ["git","ls-files", str(base) + "/**"],
+                      text=True
+                  ).splitlines()
+                  for f in out:
+                      p = Path(f)
+                      if p.is_file():
+                          files.append(p)
+
           items = []
-          for f in files:
-              p = Path(f)
-              if not p.is_file():      # 跳過資料夾
-                  continue
+          for p in files:
               try:
                   size = p.stat().st_size
               except FileNotFoundError:
                   continue
+
+              # 把「repo 中的實體路徑」換成「網站路徑」
+              # 若使用 docs 作為站台根，網站上看不到 'docs/' 這層
+              repo_path = str(p).replace("\\","/")
+              if site_dir and repo_path.startswith(site_dir + "/"):
+                  web_path = repo_path[len(site_dir)+1:]  # 去掉 'docs/'
+              else:
+                  web_path = repo_path
+
+              # 分類：取 downloads/ 之後的第一層資料夾
+              rel = web_path.split("/")
+              folder = "misc"
+              if len(rel) >= 2 and rel[0] == "downloads":
+                  folder = rel[1] if len(rel) >= 2 else "misc"
+
               # 最後一次提交時間（ISO 8601）
               dt = subprocess.check_output(
-                  ["git","log","-1","--format=%cI","--",f], text=True
+                  ["git","log","-1","--format=%cI","--", repo_path], text=True
               ).strip()
-              # 取分類：downloads/<這個字>/xxx
-              parts = p.parts
-              folder = parts[1] if len(parts) > 1 else ""
+
               items.append({
-                  "path": f,
-                  "name": p.name,
-                  "folder": folder,                        # 用來做分類
-                  "size": size,
-                  "updated": dt,
-                  "url": f"https://smallpan0423.github.io/{f}".replace(" ", "%20")
+                  "path": web_path,                     # 網站可用相對路徑
+                  "name": Path(web_path).name,          # 顯示名稱（預設檔名）
+                  "folder": folder,                     # 分類
+                  "size": size,                         # 位元組
+                  "updated": dt,                        # 最後 commit 時間（ISO）
+                  "url": f"https://{os.environ['GH_USER']}.github.io/{web_path}".replace(" ", "%20")
               })
-          # 依更新時間新→舊
+
           items.sort(key=lambda x: x["updated"], reverse=True)
-          with open("downloads.json","w",encoding="utf-8") as w:
+
+          # 下載清單輸出在「站台根目錄」：
+          # root → downloads.json
+          # docs → docs/downloads.json （對外網址都是 /downloads.json）
+          out_path = Path("downloads.json") if not site_dir else Path(site_dir)/"downloads.json"
+          out_path.parent.mkdir(parents=True, exist_ok=True)
+          with open(out_path, "w", encoding="utf-8") as w:
               json.dump(items, w, ensure_ascii=False, indent=2)
-          print("Wrote downloads.json with", len(items), "items")
+
+          print(f"Wrote {out_path} with {len(items)} items")
           PY
+        env:
+          SITE_DIR: ${{ steps.detect.outputs.site_dir }}
+          GH_USER:  ${{ github.repository_owner }}
 
       - name: Commit downloads.json if changed
         run: |
           set -e
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads.json
+          git add downloads.json docs/downloads.json 2>/dev/null || true
+          echo "::group::git status after add"; git status; echo "::endgroup::"
           if git diff --cached --quiet; then
-            echo "No changes."
+            echo "No changes to commit."
           else
             git commit -m "chore: refresh downloads.json"
             git push
