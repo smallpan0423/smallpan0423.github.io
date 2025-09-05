@@ -18,5 +18,23 @@
       線上預覽《古典電磁學（更新中）》PDF
     </a>
   </p>
+
+  <p id="last-updated" class="center"></p>
+
+<script>
+  // 取伺服器回報的檔案最後修改時間
+  const ts = new Date(document.lastModified);
+
+  // 以台北時間、中文格式顯示（想用使用者本地時間就拿掉 timeZone 這行）
+  const text = new Intl.DateTimeFormat('zh-TW', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    hour12: false,
+    timeZone: 'Asia/Taipei'
+  }).format(ts);
+
+  document.getElementById('last-updated').textContent = `最後更新：${text}`;
+</script>
+
 </body>
 </html>
