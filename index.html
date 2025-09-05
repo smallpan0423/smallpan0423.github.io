@@ -24,12 +24,13 @@
 
   <!-- 分類按鈕 -->
   <nav class="filters center" aria-label="檔案分類">
-    <button class="tag active" data-cat="all">全部</button>
-    <button class="tag" data-cat="em">四大力學筆記</button>
-    <button class="tag" data-cat="math">數學筆記</button>
-    <button class="tag" data-cat="thesis">畢業論文</button>
-    <button class="tag" data-cat="misc">其他</button>
-  </nav>
+  <button type="button" class="tag active" data-cat="all">全部</button>
+  <button type="button" class="tag" data-cat="em">四大力學筆記</button>
+  <button type="button" class="tag" data-cat="math">數學筆記</button>
+  <button type="button" class="tag" data-cat="thesis">畢業論文</button>
+  <button type="button" class="tag" data-cat="misc">其他</button>
+</nav>
+
 
   <!-- 檔案清單 -->
   <ul class="downloads" id="fileList">
@@ -54,7 +55,32 @@
 
 
 
-  
+  <script>
+  // 分類功能
+  const buttons = document.querySelectorAll('.filters .tag');
+  const items   = document.querySelectorAll('#fileList > li');
+
+  function applyFilter(cat) {
+    items.forEach(li => {
+      li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
+    });
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    if (cat === 'all') history.replaceState(null, '', location.pathname);
+    else location.hash = `cat=${cat}`;
+  }
+
+  // 點擊切換分類
+  buttons.forEach(btn => btn.addEventListener('click', () => {
+    applyFilter(btn.dataset.cat);
+  }));
+
+  // 讀取網址 hash（例如 #cat=thesis）
+  (function initFromHash(){
+    const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
+    applyFilter(m ? m[1] : 'all');
+  })();
+</script>
+
  <script>
   const GH_OWNER  = "smallpan0423";
   const GH_REPO   = "smallpan0423.github.io";
