@@ -9,34 +9,6 @@
     .center { text-align:center; margin: 2rem 0; }
   </style>
 </head>
-<!-- <body>
-  <p class="center">嗨我是小潘，歡迎來到我的個人網站，在這裡可以找到關於我的物理學筆記、鋼琴樂譜、參考書</p>
-
-  <p class="center">
-    <a href="downloads/Classical-Electrodynamic.pdf"
-      target="_blank" rel="noopener">
-      線上預覽《古典電磁學（更新中）》PDF
-    </a>
-  </p>
-
-  <p id="last-updated" class="center"></p>
-
-<script>
-  // 取伺服器回報的檔案最後修改時間
-  const ts = new Date(document.lastModified);
-
-  // 以台北時間、中文格式顯示（想用使用者本地時間就拿掉 timeZone 這行）
-  const text = new Intl.DateTimeFormat('zh-TW', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    hour12: false,
-    timeZone: 'Asia/Taipei'
-  }).format(ts);
-
-  document.getElementById('last-updated').textContent = `最後更新：${text}`;
-</script>
-
-</body> -->
 
   <body>
   <style>
@@ -51,10 +23,16 @@
   <ul class="downloads">
   <li>
     <a href="downloads/Classical-Electrodynamic.pdf" target="_blank" rel="noopener">
-      線上預覽《古典電磁學（更新中）》PDF
+      《古典電磁學（更新中）》PDF
     </a>
     <!-- 這裡的 data-repo-path 要填「在 Repo 裡的實際路徑」 -->
     <span class="updated" data-repo-path="downloads/Classical-Electrodynamic.pdf">（更新查詢中…）</span>
+
+    <a href="downloads/master.pdf" target="_blank" rel="noopener">
+      《碩士論文》PDF
+    </a>
+    <!-- 這裡的 data-repo-path 要填「在 Repo 裡的實際路徑」 -->
+    <span class="updated" data-repo-path="downloads/master.pdf">（更新查詢中…）</span>
   </li>
 
   <!-- 之後新增檔案就複製一個 li，改 data-repo-path 和連結即可 -->
