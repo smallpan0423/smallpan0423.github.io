@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
@@ -173,3 +173,130 @@
     }
   });
 </script>
+ -->
+
+
+
+ <!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <title>小潘的筆記與下載</title>
+  <style>
+    body { margin:0; background-color:#DCB5FF; font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; }
+    .center { text-align:center; margin: 1.5rem 0; }
+    .downloads { max-width: 900px; margin: 0 auto; padding: 0 1rem; list-style: none; }
+    .downloads li { margin: .6rem 0; }
+    .updated { color:#444; opacity:.85; margin-left:.5rem; font-size:.95rem; }
+    .filters.center { margin-top: .5rem; }
+    .tag {
+      display:inline-block; margin:.25rem; padding:.4rem .8rem; border-radius:999px;
+      border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer;
+    }
+    .tag.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+
+  <h2 class="center">嗨我是小潘，歡迎來到我的個人網站，這裡可以找到關於我的物理學筆記、鋼琴樂譜、參考書</h2>
+
+  <!-- 分類按鈕 -->
+  <nav class="filters center" aria-label="檔案分類">
+    <button class="tag active" data-cat="all">全部</button>
+    <button class="tag" data-cat="em">四大力學筆記</button>
+    <button class="tag" data-cat="math">數學筆記</button>
+    <button class="tag" data-cat="thesis">畢業論文</button>
+    <button class="tag" data-cat="misc">其他</button>
+  </nav>
+
+  <!-- 檔案清單 -->
+  <ul class="downloads" id="fileList">
+    <li data-folder="em">
+      <a href="downloads/Classical-Electrodynamics.pdf" target="_blank" rel="noopener">
+        《古典電磁學（更新中）》PDF
+      </a>
+      <span class="updated"
+            data-repo-path="downloads/Classical-Electrodynamics.pdf"
+            data-file="downloads/Classical-Electrodynamics.pdf">（更新查詢中…）</span>
+    </li>
+
+    <li data-folder="thesis">
+      <a href="downloads/master.pdf" target="_blank" rel="noopener">
+        《碩士論文》PDF
+      </a>
+      <span class="updated"
+            data-repo-path="downloads/master.pdf"
+            data-file="downloads/master.pdf">（更新查詢中…）</span>
+    </li>
+  </ul>
+
+  <script>
+    // 你的 GitHub 帳號與 repo 名稱
+    const GH_OWNER = "smallpan0423";
+    const GH_REPO  = "smallpan0423.github.io"; // 若用 docs/ 發佈，這裡仍是 repo 名
+
+    // 1) 分類過濾
+    const buttons = document.querySelectorAll('.filters .tag');
+    const items   = document.querySelectorAll('#fileList > li');
+
+    function applyFilter(cat) {
+      items.forEach(li => {
+        li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
+      });
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+      if (cat === 'all') history.replaceState(null, '', location.pathname);
+      else location.hash = `cat=${cat}`;
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
+    (function initFilterFromHash(){
+      const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
+      applyFilter(m ? m[1] : 'all');
+    })();
+
+    // 2) 顯示「PDF 上傳/更新時間」
+    const fmt = new Intl.DateTimeFormat('zh-TW', {
+      dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
+    });
+
+    async function fetchCommitTime(repoPath) {
+      const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${encodeURIComponent(repoPath)}&per_page=1`;
+      const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' }, cache:'no-store' });
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+      const arr = await res.json();
+      if (!arr?.length) throw new Error('No commits');
+      const iso = arr[0].commit.committer?.date || arr[0].commit.author?.date;
+      return new Date(iso);
+    }
+
+    async function fetchLastModified(url) {
+      const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+      if (!r.ok) throw new Error(`HEAD ${r.status}`);
+      const lm = r.headers.get('last-modified');
+      if (!lm) throw new Error('No Last-Modified');
+      return new Date(lm);
+    }
+
+    async function setUpdated(el) {
+      const repoPath = el.dataset.repoPath;  // repo 內路徑（若用 docs 發佈→寫 docs/...）
+      const fileUrl  = el.dataset.file;      // 網站上的實際連結
+      try {
+        const d = await fetchCommitTime(repoPath);
+        el.textContent = `（更新：${fmt.format(d)}）`;
+      } catch (e1) {
+        try {
+          const d2 = await fetchLastModified(fileUrl);
+          el.textContent = `（更新：${fmt.format(d2)}）`;
+        } catch (e2) {
+          el.textContent = '（無法取得更新時間）';
+          console.warn('更新時間取得失敗：', repoPath, e1, e2);
+        }
+      }
+    }
+
+    document.querySelectorAll('.updated[data-repo-path][data-file]').forEach(setUpdated);
+  </script>
+
+</body>
+</html>
