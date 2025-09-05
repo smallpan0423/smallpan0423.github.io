@@ -1,13 +1,22 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>背景顏色示範</title>
-<style>
-  /* 去掉預設白邊，讓背景覆蓋整頁 */
-  body { margin:0; background-color: #DCB5FF; }
-</style>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <title>背景顏色示範</title>
+  <style>
+    /* 去掉預設白邊，讓背景覆蓋整頁 */
+    body { margin:0; background-color:#DCB5FF; }
+    .center { text-align:center; margin: 2rem 0; }
+  </style>
+</head>
 <body>
-  <p style="text-align:center;">這段文字會置中</p>
+  <p class="center">這段文字會置中</p>
+
+  <p class="center">
+    <a href="downloads/古典電磁學（未完成）.pdf"
+       download="古典電磁學（未完成）.pdf">
+      下載《古典電磁學（未完成）.pdf》
+    </a>
+  </p>
 </body>
-<a href="downloads/古典電磁學（未完成）.pdf" 古典電磁學（未完成).pdf>下載 my-file.zip</a>
-
-
+</html>
