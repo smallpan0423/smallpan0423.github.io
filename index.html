@@ -184,6 +184,79 @@
   </a>
 </p>
 
+<script>
+  // 若 workflow 輸出在 docs/，改成 'docs/downloads.json'
+  const MANIFEST_URL = 'downloads.json';
+
+  // 分類功能（如果你之前已加，就不用重複）
+  const buttons = document.querySelectorAll('.filters .tag');
+  const listEl  = document.getElementById('fileList');
+
+  function applyFilter(cat) {
+    [...listEl.children].forEach(li => {
+      li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
+    });
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    if (cat === 'all') history.replaceState(null,'',location.pathname);
+    else location.hash = `cat=${cat}`;
+  }
+  buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
+
+  // 讀取清單並渲染
+  (async () => {
+    const fmt = new Intl.DateTimeFormat('zh-TW', {
+      dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei'
+    });
+    try {
+      const res = await fetch(MANIFEST_URL, { cache:'no-store' });
+      const items = await res.json(); // [{path,name,folder,size,updated,url}]
+      const frag = document.createDocumentFragment();
+
+      for (const it of items) {
+        const li = document.createElement('li');
+        li.dataset.folder = it.folder || 'misc';
+
+        // 顯示名稱：預設用檔名；若想客製，這裡可加一個對照表
+        const title = it.name;
+
+        // 預覽（新分頁）
+        const a = document.createElement('a');
+        a.href = it.path; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = title;
+        li.appendChild(a);
+
+        // 更新時間
+        const span = document.createElement('span');
+        span.className = 'updated';
+        span.textContent = `（更新：${fmt.format(new Date(it.updated))}）`;
+        li.appendChild(span);
+
+        // 檔案大小（MB）
+        const mb = (it.size/1024/1024).toFixed(2);
+        const sz = document.createElement('span');
+        sz.textContent = ` · ${mb} MB`;
+        li.appendChild(sz);
+
+        // 下載（可選）
+        const dl = document.createElement('a');
+        dl.href = it.path; dl.download = it.name; dl.style.marginLeft = '.5rem';
+        dl.textContent = '下載';
+        li.appendChild(dl);
+
+        frag.appendChild(li);
+      }
+      listEl.innerHTML = '';
+      listEl.appendChild(frag);
+
+      // 從網址 hash 套用預設分類（例如 #cat=thesis）
+      const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
+      applyFilter(m ? m[1] : 'all');
+    } catch (e) {
+      listEl.innerHTML = '<li>清單載入失敗，請稍後重試。</li>';
+      console.error('載入 downloads.json 失敗：', e);
+    }
+  })();
+</script>
 
 
 
