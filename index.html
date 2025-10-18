@@ -1,214 +1,127 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>小潘的筆記</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome</title>
   <style>
-    body { margin:0; background-color:#DCB5FF; font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; }
-    .center { text-align:center; margin: 1.5rem 0; }
-    .downloads { max-width: 900px; margin: 0 auto; padding: 0 1rem; list-style: none; }
-    .downloads li { margin: .6rem 0; }
-    .updated { color:#444; opacity:.85; margin-left:.5rem; font-size:.95rem; }
-    .filters.center { margin-top: .5rem; }
-    .tag { display:inline-block; margin:.25rem; padding:.4rem .8rem; border-radius:999px; border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer; }
-    .tag.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
-    .hidden { display:none !important; }
+    /* ---- 基本底色與字體 ---- */
+    :root{
+      --bg: #d6d0ff;       /* 淡紫底，接近截圖 */
+      --ink: #1f1f1f;      /* 內文深灰 */
+      --link: #6a41ff;     /* 連結/標題藍紫 */
+      --maxw: 960px;       /* 內容最大寬度（截圖看起來 ~900-1000px） */
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC",
+                   "Hiragino Sans GB", "Microsoft JhengHei", Arial, sans-serif;
+      line-height:1.85;
+    }
+
+    /* ---- 置中內容欄 ---- */
+    .wrap{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 28px 18px 80px;
+    }
+
+    /* ---- 頁首大標 ---- */
+    h1{
+      margin: 8px 0 22px;
+      text-align: center;
+      color: var(--link);
+      font-weight: 800;
+      font-size: clamp(2.2rem, 5.6vw, 3.2rem); /* 手機到桌機自適應，接近截圖大小 */
+      letter-spacing: .5px;
+    }
+
+    /* ---- 內文段落 ---- */
+    p{margin: 1.1rem 0;}
+    a{
+      color: var(--link);
+      text-underline-offset: 2px;
+    }
+    a:hover{ text-decoration-thickness: 2px; }
+
+    /* ---- 強調的紫色粗體（Jobs for students!） ---- */
+    .accent{
+      color: var(--link);
+      font-weight: 800;
+    }
+
+    /* ---- 簽名靠右 ---- */
+    .sig{
+      text-align: right;
+      margin: 1.2rem 0 1.6rem;
+      font-weight: 600;
+    }
+
+    /* ---- 大圖 ---- */
+    .hero{
+      display:block;
+      width:100%;
+      height:auto;
+      border: 0;
+      /* 截圖中圖像是完整矩形，無圓角陰影 */
+    }
+
+    /* ---- 讓桌機的文字寬度更像截圖（約 60-70 字元） ---- */
+    .text{
+      max-width: 720px;   /* 控制段落行長，貼近示意頁 */
+      margin: 0 auto;     /* 在 wrap 內再置中，讓左右留白更像截圖 */
+      font-size: 1.05rem; /* 微調字級接近瀏覽器預設下的視覺比例 */
+    }
+
+    /* 小螢幕排版微調 */
+    @media (max-width: 560px){
+      .text{max-width: 100%;}
+    }
   </style>
-
-
-  <style>
-  .intro { max-width: 900px; margin: 0 auto; padding: 0 1rem 1rem; line-height: 1.8; }
-  .link-grid {
-    max-width: 900px; margin: 0.5rem auto 1.5rem; padding: 0 1rem;
-    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px;
-  }
-  .link-card {
-    background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:16px;
-    padding:14px 16px; text-decoration:none; display:block;
-    transition: transform .08s ease, box-shadow .08s ease; color:#222;
-  }
-  .link-card:hover { transform: translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.08); }
-  .link-card small { display:block; opacity:.7; margin-top:4px; }
-  .ext::after { content:" ↗"; }
-
-   h2.center {
-  color: #6633FF;          /* 改成藍紫色 */
-  font-size: 2rem;         /* 放大字體大小 */
-  font-weight: 800;        /* 粗體 */
-  margin-top: 1.0rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.5px;   /* 微調字距讓更穩定 */
-}
-
-
-
-</style>
-
 </head>
 <body>
+  <div class="wrap">
+    <h1>Welcome</h1>
 
-  <h2 class="center">Welcome</h2>
-    <div class="intro">
-    I am a Ph.D student in theoretical physics.
-</div>
+    <div class="text">
+      <p>
+        I am a theoretical physicist, photographer and amateur astronomer.
+      </p>
 
-<div class="link-grid" aria-label="快速連結">
-  <!-- 外部網站：新分頁開啟 -->
-  <a class="link-card ext" href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">
-    國立中央大學 物理系
-    <small>Department of Physics @ NCU</small>
-  </a>
-  <a class="link-card ext" href="https://scholar.google.com/citations?user=YOUR_ID_HERE" target="_blank" rel="noopener">
-    Google Scholar
-    <small>我的論文與引用</small>
-  </a>
-  <a class="link-card ext" href="https://github.com/smallpan0423" target="_blank" rel="noopener">
-    GitHub
-    <small>程式與專案</small>
-  </a>
-  <a class="link-card ext" href="https://www.wolfram.com/language/" target="_blank" rel="noopener">
-    Wolfram Language
-    <small>工具與套件</small>
-  </a>
+      <p>
+        I am Professor at the National Central University (NCU)
+        <a href="#" target="_blank" rel="noopener">Department of Physics</a> in Taoyuan, Taiwan; and a
+        member of its <a href="#" target="_blank" rel="noopener">Fundamental Physics Group</a> and
+        <a href="#" target="_blank" rel="noopener">Center for High Field and High Energy Physics</a>.
+        I am also an adjunct faculty at NCU's
+        <a href="#" target="_blank" rel="noopener">Graduate Institute of Astronomy</a>.
+      </p>
 
-  <!-- 站內頁面：相對路徑（請在 repo 建 pages/xxx.html） -->
-  <a class="link-card" href="/pages/about.html">
-    關於我 / About
-    <small>簡短自我介紹與聯絡方式</small>
-  </a>
-  <a class="link-card" href="/pages/projects.html">
-    專題 / Projects
-    <small>非均勻溫度、最佳化協定、擦除研究</small>
-  </a>
-  <a class="link-card" href="/pages/photos.html">
-    攝影 / Photos
-    <small>生活與旅途的影像</small>
-  </a>
-</div>
+      <p>
+        My research interests span theoretical aspects of gravitation; particle cosmology; the structure and dynamics of
+        classical and quantum field theories; and
+        <a href="#" target="_blank" rel="noopener">Wolfram Language</a> software development.
+        You can find my publications <a href="#" target="_blank" rel="noopener">here</a> or
+        <a href="#" target="_blank" rel="noopener">here</a>; or, check out my
+        <a href="#" target="_blank" rel="noopener">Google Scholar Profile</a>.
+        In my free time, which is somewhat ephemeral, I bring out my camera(s) for a shoot.
+      </p>
 
+      <p>
+        <span class="accent">Jobs for students!</span>
+        I am looking for undergrad and graduate students to help me build and expand my
+        <a href="#" target="_blank" rel="noopener">TensoriaCalc</a> differential geometry package.
+        See ad <a href="#" target="_blank" rel="noopener">here</a>.
+      </p>
 
+      <p class="sig">- Yi-Zen</p>
+    </div>
 
-
-
-  
-
-  <!-- 分類按鈕 -->
-  <nav class="filters center" aria-label="檔案分類">
-    <button type="button" class="tag active" data-cat="all">全部</button>
-    <button type="button" class="tag" data-cat="em">四大力學筆記</button>
-    <button type="button" class="tag" data-cat="math">數學筆記</button>
-    <button type="button" class="tag" data-cat="thesis">畢業論文</button>
-    <button type="button" class="tag" data-cat="music">樂譜</button>
-    <button type="button" class="tag" data-cat="other">其他</button>
-  </nav>
-
-  <!-- 檔案清單（交給 JS 產生） -->
-  <ul class="downloads" id="fileList"></ul>
-
-  <!-- 直接連到 GitHub 上傳資料夾 -->
-  <p class="center">
-    <a href="https://github.com/smallpan0423/smallpan0423.github.io/upload/main/downloads" target="_blank" rel="noopener">
-      上傳新檔到 downloads/
-    </a>
-  </p>
-
-  <script>
-    // ===== 設定：downloads.json 的位置（docs/ 發佈就改成 'docs/downloads.json'） =====
-     const MANIFEST_URL = 'downloads.json?v=' + Date.now();
-// 若 Pages 來源是 docs/ 也 OK，因為我們兩邊都寫了;
-
-    // ===== 分類功能（只保留這一份） =====
-    const buttons = document.querySelectorAll('.filters .tag');
-    const listEl  = document.getElementById('fileList');
-
-    function applyFilter(cat) {
-      [...listEl.children].forEach(li => {
-        li.classList.toggle('hidden', !(cat === 'all' || li.dataset.folder === cat));
-      });
-      buttons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-      if (cat === 'all') history.replaceState(null,'',location.pathname);
-      else location.hash = `cat=${cat}`;
-    }
-    buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.cat)));
-
-    // ===== 手機/內建瀏覽器 PDF 預覽加強：渲染後套用 =====
-    function enhancePdfLinks(container){
-      const ua = navigator.userAgent;
-      const inApp = /FBAN|FBAV|Instagram|Line\//i.test(ua);
-      const iOS   = /iPhone|iPad|iPod/i.test(ua);
-      const BIG_MB = 50;
-      const toGView = abs => 'https://docs.google.com/viewer?embedded=1&url=' + encodeURIComponent(abs);
-
-      (async () => {
-        const links = [...container.querySelectorAll('a[target="_blank"]')].filter(a => /\.pdf(\?|$)/i.test(a.href));
-        for (const a of links) {
-          const abs = new URL(a.getAttribute('href'), location.origin).href;
-          if (inApp) { a.href = toGView(abs); continue; }
-          if (iOS) {
-            try {
-              const r = await fetch(a.getAttribute('href'), { method:'HEAD', cache:'no-store' });
-              const len = +(r.headers.get('content-length') || 0);
-              if (len && len > BIG_MB * 1024 * 1024) a.href = toGView(abs);
-            } catch {}
-          }
-        }
-      })();
-    }
-
-    // ===== 載入 downloads.json 並渲染清單 =====
-    (async () => {
-      const fmt = new Intl.DateTimeFormat('zh-TW', { dateStyle:'medium', timeStyle:'short', hour12:false, timeZone:'Asia/Taipei' });
-      try {
-        const res = await fetch(MANIFEST_URL, { cache:'no-store' });
-        const items = await res.json(); // [{path,name,folder,size,updated,url}]
-        const frag = document.createDocumentFragment();
-
-        for (const it of items) {
-          const li = document.createElement('li');
-          li.dataset.folder = it.folder || 'misc';
-
-          // 預覽（新分頁）
-          const a = document.createElement('a');
-          a.href = it.path; a.target = '_blank'; a.rel = 'noopener';
-          a.textContent = it.name;      // 需要顯示中文標題可在 Actions 端加 mapping
-          li.appendChild(a);
-
-          // 更新時間
-          const span = document.createElement('span');
-          span.className = 'updated';
-          span.textContent = `（更新：${fmt.format(new Date(it.updated))}）`;
-          li.appendChild(span);
-
-          // 檔案大小（MB）
-          const sz = document.createElement('span');
-          sz.textContent = ` · ${(it.size/1024/1024).toFixed(2)} MB`;
-          li.appendChild(sz);
-
-          // 下載按鈕（可選）
-          const dl = document.createElement('a');
-          dl.href = it.path; dl.download = it.name; dl.style.marginLeft = '.5rem';
-          dl.textContent = '下載';
-          li.appendChild(dl);
-
-          frag.appendChild(li);
-        }
-
-        listEl.innerHTML = '';
-        listEl.appendChild(frag);
-
-        // 套用分類（支援 #cat=thesis）
-        const m = location.hash.match(/cat=([a-z0-9_-]+)/i);
-        applyFilter(m ? m[1] : 'all');
-
-        // 最後：讓 PDF 連結具備行動裝置預覽相容性
-        enhancePdfLinks(listEl);
-      } catch (e) {
-        listEl.innerHTML = '<li>清單載入失敗，請稍後重試。</li>';
-        console.error('載入 downloads.json 失敗：', e);
-      }
-    })();
-  </script>
- 
-
+    <!-- Hero 圖片：把 src 換成你的圖片路徑 -->
+    <img class="hero" src="images/your-hero.jpg" alt="Landscape photo" />
+  </div>
 </body>
 </html>
