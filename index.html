@@ -13,13 +13,17 @@
       --maxw: 900px;       /* 內容最大寬度（截圖看起來 ~900-1000px） */
     }
     html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--ink);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC",
-                   "Hiragino Sans GB", "Microsoft JhengHei", Arial, sans-serif;
-      line-height:1.85;
+    body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family:
+    "Segoe UI", "Helvetica Neue", Helvetica, Arial,
+    "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    font-size: 1rem;
+    line-height: 1.8;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;  /* 讓字邊緣更柔順 */
     }
 
     /* ---- 置中內容欄 ---- */
@@ -35,7 +39,7 @@
       text-align: center;
       color: var(--link);
       font-weight: 800;
-      font-size: clamp(2.2rem, 5.6vw, 3.2rem); /* 手機到桌機自適應，接近截圖大小 */
+      font-size: clamp(1.8rem, 4vw, 2.2rem); /* 手機到桌機自適應，接近截圖大小 */
       letter-spacing: .5px;
     }
 
