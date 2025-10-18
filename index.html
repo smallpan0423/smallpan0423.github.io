@@ -10,7 +10,7 @@
       --bg: #d6d0ff;       /* 淡紫底，接近截圖 */
       --ink: #1f1f1f;      /* 內文深灰 */
       --link: #6a41ff;     /* 連結/標題藍紫 */
-      --maxw: 1500px;       /* 內容最大寬度（截圖看起來 ~900-1000px） */
+      --maxw: 900px;       /* 內容最大寬度（截圖看起來 ~900-1000px） */
     }
     html,body{height:100%}
     body{
@@ -34,7 +34,7 @@
       margin: 8px 0 22px;
       text-align: center;
       color: var(--link);
-      font-weight: 100;
+      font-weight: 800;
       font-size: clamp(2.2rem, 5.6vw, 3.2rem); /* 手機到桌機自適應，接近截圖大小 */
       letter-spacing: .5px;
     }
@@ -71,9 +71,9 @@
 
     /* ---- 讓桌機的文字寬度更像截圖（約 60-70 字元） ---- */
     .text{
-      max-width: 720px;   /* 控制段落行長，貼近示意頁 */
+      max-width: 1000px;   /* 控制段落行長，貼近示意頁 */
       margin: 0 auto;     /* 在 wrap 內再置中，讓左右留白更像截圖 */
-      font-size: 1.05rem; /* 微調字級接近瀏覽器預設下的視覺比例 */
+      font-size: 1.0rem; /* 微調字級接近瀏覽器預設下的視覺比例 */
     }
 
     /* 小螢幕排版微調 */
