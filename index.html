@@ -14,10 +14,28 @@
     .tag.active { background:#6c5ce7; color:#fff; border-color:#6c5ce7; }
     .hidden { display:none !important; }
   </style>
+
+
+  <style>
+  .intro { max-width: 900px; margin: 0 auto; padding: 0 1rem 1rem; line-height: 1.8; }
+  .link-grid {
+    max-width: 900px; margin: 0.5rem auto 1.5rem; padding: 0 1rem;
+    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px;
+  }
+  .link-card {
+    background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:16px;
+    padding:14px 16px; text-decoration:none; display:block;
+    transition: transform .08s ease, box-shadow .08s ease; color:#222;
+  }
+  .link-card:hover { transform: translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.08); }
+  .link-card small { display:block; opacity:.7; margin-top:4px; }
+  .ext::after { content:" ↗"; }
+</style>
+
 </head>
 <body>
 
-  <h2 class="center">Welcome to my personal website</h2>
+  <h2 class="center">Welcome</h2>
 
   <!-- 分類按鈕 -->
   <nav class="filters center" aria-label="檔案分類">
