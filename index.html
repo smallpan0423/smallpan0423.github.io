@@ -1,252 +1,611 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome</title>
+  <title>Cin-Hua — Theoretical Physics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    /* ---- 基本底色與字體 ---- */
-    :root{
-      --bg: #d0caff;       /* 淡紫底，接近截圖 */
-      --ink: #000000;      /* 內文深灰 */
-      --link: #6a41ff;     /* 連結/標題藍紫 */
-      --maxw: 900px;       /* 內容最大寬度（截圖看起來 ~900-1000px） */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5F2EC;
+      --warm-white: #FDFCF9;
+      --ink: #1A1714;
+      --ink-mid: #4A4540;
+      --ink-light: #8C8580;
+      --accent: #2D5016;
+      --accent-warm: #8B4513;
+      --accent-rust: #C4622D;
+      --rule: #D8D3CB;
+      --highlight: #EDE8DF;
     }
-    html,body{height:100%}
+
+    html { scroll-behavior: smooth; }
+
     body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family:
-    "Segoe UI", "Helvetica Neue", Helvetica, Arial,
-    "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-    font-size: 1rem;
-    line-height: 1.2;
-    font-weight: 400;
-    /* -webkit-font-smoothing: antialiased;  /* 讓字邊緣更柔順 */ */
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.7;
+      min-height: 100vh;
     }
 
-    /* ---- 置中內容欄 ---- */
-    .wrap{
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 28px 18px 80px;
+    /* ── Side Nav ── */
+    .sidenav {
+      position: fixed;
+      left: 0; top: 0;
+      width: 64px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2.5rem 0;
+      border-right: 1px solid var(--rule);
+      background: var(--warm-white);
+      z-index: 100;
     }
 
-    /* ---- 頁首大標 ---- */
+    .sidenav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .sidenav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      align-items: center;
+    }
+
+    .sidenav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      transition: color 0.2s;
+    }
+
+    .sidenav-links a:hover { color: var(--accent); }
+
+    .sidenav-year {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-light);
+      opacity: 0.5;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Main Content ── */
+    main {
+      margin-left: 64px;
+      max-width: 900px;
+      padding: 0 4rem 8rem 5rem;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 7rem 0 4rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 5rem;
+    }
+
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .hero-label::after {
+      content: '';
+      display: inline-block;
+      width: 2.5rem;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+
     h1 {
-    margin-top: -1.0rem;     /* 原本 8px → 改更小，讓它更靠上 */
-    margin-bottom: 1.2rem;  /* 下方留一點空隙即可 */
-    text-align: center;
-    color: var(--link);
-    font-weight: 500;
-    font-size: clamp(1.8rem, 4vw, 2.2rem);
-    letter-spacing: 0.5px;
-  }
-
-    /* ---- 內文段落 ---- */
-    p{margin: 1.0rem 0;}
-    a{
-      color: #6E67A0;
-      text-underline-offset: 2px;
-    }
-    a:hover{ text-decoration-thickness: 2px; }
-
-    /* ---- 強調的紫色粗體（Jobs for students!） ---- */
-    .accent{
-      color: var(--link);
-      font-weight: 800;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 0.15em;
     }
 
-    /* ---- 簽名靠右 ---- */
-    .sig{
-      text-align: right;
-      margin: 1.2rem 0 1.6rem;
-      font-weight: 600;
+    h1 em {
+      font-style: italic;
+      color: var(--ink-mid);
     }
 
-    /* ---- 大圖 ---- */
-    .hero{
-      display:block;
-      width:100%;
-      height:auto;
-      border: 0;
-      /* 截圖中圖像是完整矩形，無圓角陰影 */
+    .hero-subtitle {
+      margin-top: 2rem;
+      max-width: 480px;
+      color: var(--ink-mid);
+      font-size: 17px;
+      line-height: 1.75;
     }
 
-    /* ---- 讓桌機的文字寬度更像截圖（約 60-70 字元） ---- */
-    .text{
-      max-width: 800px;   /* 控制段落行長，貼近示意頁 */
-      margin: 0 auto;     /* 在 wrap 內再置中，讓左右留白更像截圖 */
-      font-size: 1.0rem; /* 微調字級接近瀏覽器預設下的視覺比例 */
+    .hero-meta {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
     }
 
-    /* 小螢幕排版微調 */
-    @media (max-width: 560px){
-      .text{max-width: 100%;}
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
     }
 
+    .meta-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
 
+    .meta-value {
+      font-size: 14px;
+      color: var(--ink-mid);
+    }
 
+    /* ── Sections ── */
+    section {
+      margin-bottom: 5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-light);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── About ── */
+    .about-text p {
+      margin-bottom: 1.2rem;
+      color: var(--ink-mid);
+      font-size: 17px;
+    }
+
+    .about-text a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: var(--rule);
+      text-underline-offset: 3px;
+      transition: text-decoration-color 0.2s;
+    }
+    .about-text a:hover { text-decoration-color: var(--accent); color: var(--accent); }
+
+    /* ── Publications ── */
+    .pub-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pub-item {
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      gap: 0 1.5rem;
+      align-items: start;
+    }
+
+    .pub-item:last-child { border-bottom: 1px solid var(--rule); }
+
+    .pub-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-light);
+      padding-top: 0.2rem;
+    }
+
+    .pub-title {
+      font-style: italic;
+      font-size: 17px;
+      margin-bottom: 0.3rem;
+      color: var(--ink);
+    }
+
+    .pub-journal {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-light);
+      letter-spacing: 0.02em;
+    }
+
+    .pub-link {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .pub-link:hover {
+      background: var(--accent);
+      color: var(--warm-white);
+    }
+
+    /* ── Links / Resources ── */
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .link-card {
+      background: var(--warm-white);
+      padding: 1.5rem 1.6rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+
+    .link-card:hover { background: var(--highlight); }
+
+    .link-card-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .link-card-title {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 16px;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .link-card-arrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--ink-light);
+      margin-top: 0.5rem;
+      transition: transform 0.15s, color 0.15s;
+      display: inline-block;
+    }
+
+    .link-card:hover .link-card-arrow {
+      transform: translate(3px, -3px);
+      color: var(--accent);
+    }
+
+    /* ── Hero Photo ── */
+    .photo-strip {
+      margin: 4rem 0;
+      position: relative;
+      overflow: hidden;
+      height: 320px;
+      background: var(--highlight);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-strip img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+      filter: sepia(8%) contrast(1.04);
+    }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 1rem;
+      right: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Contact ── */
+    .contact-block {
+      padding: 2.5rem;
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .contact-block .contact-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.6rem;
+    }
+
+    .contact-email {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+    }
+
+    .contact-note {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: rgba(245,242,236,0.45);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+    }
+
+    /* ── Footer ── */
     footer {
-  background: #d0caff; /* 和整體一致的淡紫底 */
-  padding: 40px 0 60px;
-  text-align: center;
-  font-family: "Segoe UI", "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
-}
+      margin-left: 64px;
+      border-top: 1px solid var(--rule);
+      padding: 2rem 4rem 2rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
 
-.footer {
-  max-width: 850px;
-  margin-top: 1rem;
-  margin-bottom: -1.0rem;
-  color: #000;
-}
+    .footer-name {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--ink-light);
+    }
 
-.contact-title {
-  color: #8A4DB5;       /* 紫紅色主題字 */
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 0.3rem;
-}
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
 
-.email {
-  letter-spacing: 0.25em; /* 拉開字距 */
-  margin-bottom: 2rem;
-  font-size: 1.05rem;
-  color: #000;
-}
+    .footer-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
 
-.section-title {
-  color: #8A4DB5;
-  font-weight: 700;
-  margin-top: 1rem;
-  margin-bottom: -1.0rem;
-  font-size: 1.05rem;
-}
+    .footer-links a:hover { color: var(--accent); }
 
-footer a {
-  color: #6E67A0;               /* 灰紫色連結 */
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
+    /* ── Signature ── */
+    .sig-line {
+      font-style: italic;
+      color: var(--ink-light);
+      margin-top: 1.5rem;
+      font-size: 16px;
+    }
 
-footer a:hover {
-  color: #554E88;
-  text-decoration-thickness: 2px;
-}
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
+    .hero > * {
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero-label  { animation-delay: 0.05s; }
+    .hero h1     { animation-delay: 0.15s; }
+    .hero-subtitle { animation-delay: 0.25s; }
+    .hero-meta   { animation-delay: 0.35s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .sidenav { display: none; }
+      main { margin-left: 0; padding: 0 1.5rem 5rem; }
+      footer { margin-left: 0; padding: 1.5rem; }
+      .hero { padding: 3.5rem 0 2.5rem; }
+      h1 { font-size: 3rem; }
+      .link-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Welcome</h1>
 
-    <div class="text">
-      <p>
-        I am a Ph.D. student in theoretical physics and an amateur piano enthusiast.
+  <!-- Side Navigation -->
+  <nav class="sidenav" aria-label="Site navigation">
+    <span class="sidenav-logo">Cin-Hua</span>
+    <div class="sidenav-links">
+      <a href="#about">About</a>
+      <a href="#publications">Papers</a>
+      <a href="#links">Links</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <span class="sidenav-year">NCU · TW</span>
+  </nav>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Hero -->
+    <div class="hero" id="top">
+      <div class="hero-label">Ph.D. Student · Theoretical Physics</div>
+      <h1>Cin-Hua<br><em>Wang</em></h1>
+      <p class="hero-subtitle">
+        Studying statistical, nonlinear, and biological physics at National Central University.
+        Amateur pianist.
       </p>
-
-      <p>
-        I am a student at the National Central University (NCU)
-        <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department of Physics</a> in Taoyuan, Taiwan; and a
-        member of its <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener"> Statistical, Nonlinear and Bio Physics Research Group</a> and
-        <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">Center for Complex Systems</a>.
-      </p>
-
-      <p>
-        <!-- <a href="#" target="_blank" rel="noopener">Wolfram Language</a> software development.
-        You can find my publications <a href="#" target="_blank" rel="noopener">here</a> or
-        <a href="#" target="_blank" rel="noopener">here</a>; or, check out my
-        <a href="#" target="_blank" rel="noopener">Google Scholar Profile</a>.
-        In my free time, which is somewhat ephemeral, I bring out my camera(s) for a shoot. -->
-      </p>
-
-      <p>
-        <!-- <span class="accent">Jobs for students!</span>
-        I am looking for undergrad and graduate students to help me build and expand my
-        <a href="#" target="_blank" rel="noopener">TensoriaCalc</a> differential geometry package.
-        See ad <a href="#" target="_blank" rel="noopener">here</a>. -->
-      </p>
-
-      <p class="sig">- Cin-Hua</p>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-label">Affiliation</span>
+          <span class="meta-value">Dept. of Physics, NCU</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Research Group</span>
+          <span class="meta-value">Statistical & Nonlinear Physics</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Location</span>
+          <span class="meta-value">Taoyuan, Taiwan</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Hero 圖片：把 src 換成你的圖片路徑 -->
-    <img class="hero" src="downloads/InShot_20251012_153401494_1.jpg" alt="Landscape photo" />
-  </div>
+    <!-- Photo -->
+    <div class="photo-strip">
+      <img src="downloads/InShot_20251012_153401494_1.jpg" alt="Landscape photo by Cin-Hua" />
+      <span class="photo-caption">Photography / 2025</span>
+    </div>
 
+    <!-- About -->
+    <section id="about">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2>About</h2>
+      </div>
+      <div class="about-text">
+        <p>
+          I am a Ph.D. student in theoretical physics and an amateur piano enthusiast.
+        </p>
+        <p>
+          I am a student at the
+          <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department of Physics</a>
+          at National Central University (NCU) in Taoyuan, Taiwan — a member of the
+          <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">Statistical, Nonlinear and Bio Physics Research Group</a>
+          and the
+          <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">Center for Complex Systems</a>.
+        </p>
+        <p class="sig-line">— Cin-Hua</p>
+      </div>
+    </section>
 
+    <!-- Publications -->
+    <section id="publications">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2>Publications</h2>
+      </div>
+      <ul class="pub-list">
+        <li class="pub-item">
+          <span class="pub-num">01</span>
+          <div>
+            <p class="pub-title">Statistical and Nonlinear Physics — Research Article</p>
+            <p class="pub-journal">Chinese Journal of Physics · Vol. 97 · Oct. 2025 · pp. 1316–1327</p>
+            <a class="pub-link" href="https://www.sciencedirect.com/science/article/abs/pii/S0577907325003016" target="_blank" rel="noopener">Read →</a>
+          </div>
+        </li>
+      </ul>
+    </section>
 
+    <!-- Links -->
+    <section id="links">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2>Resources &amp; Links</h2>
+      </div>
+      <div class="link-grid">
+        <a class="link-card" href="resources.html">
+          <span class="link-card-label">Physics</span>
+          <span class="link-card-title">Study Resources</span>
+          <span class="link-card-arrow">↗</span>
+        </a>
+        <a class="link-card" href="downloads/thesis/Masterthesis.pdf" target="_blank" rel="noopener">
+          <span class="link-card-label">Thesis</span>
+          <span class="link-card-title">Master's Thesis (PDF)</span>
+          <span class="link-card-arrow">↗</span>
+        </a>
+        <a class="link-card" href="https://youtube.com/channel/UCSeIhm6RlVRGaIzaIqzET_Q?si=vPo59W2YYRmdhA56" target="_blank" rel="noopener">
+          <span class="link-card-label">Piano / Music</span>
+          <span class="link-card-title">YouTube Channel</span>
+          <span class="link-card-arrow">↗</span>
+        </a>
+        <a class="link-card" href="https://drive.google.com/drive/u/0/folders/16nY9fwXG63XWDjFoGxP49nqADKEIH2jn" target="_blank" rel="noopener">
+          <span class="link-card-label">Files</span>
+          <span class="link-card-title">Cloud Sharing</span>
+          <span class="link-card-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2>Contact</h2>
+      </div>
+      <div class="contact-block">
+        <p class="contact-label">Email</p>
+        <p class="contact-email">andy0929539033@gmail.com</p>
+        <p class="contact-note">Feel free to reach out regarding research, collaboration, or questions.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
   <footer>
-  <div class="footer">
-    <p class="contact-title">Contact Information</p>
-    <p class="email">andy0929539033@gmail·com</p>
+    <span class="footer-name">Cin-Hua · NCU Physics</span>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department</a>
+      <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">CCS</a>
+      <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">Lab</a>
+    </nav>
+  </footer>
 
-
-    
-    <div class="footer-section">
-      <p class="section-title">Physics</p>
-      <p>
-        <!-- Free textbook project: -->
-        <a href="resources.html">Resources</a>
-        <!-- <a href="#" target="_blank" rel="noopener">Differential Geometry and Physics in Curved Spacetimes</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Relativity</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">General Physics A (Physics of Motion)</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">General Physics B (Electromagnetism)</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Quantum Mechanics</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Quantum Field Theory</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Mathematical Methods in Physics</a> -->
-      </p>
-    </div>
-
-
-    <div class="footer-section">
-      <p class="section-title">Extracurricular interests results</p>
-      <p>
-        <!-- Free textbook project: -->
-        <a href="https://youtube.com/channel/UCSeIhm6RlVRGaIzaIqzET_Q?si=vPo59W2YYRmdhA56">My YouTube Channel</a><br>
-        <a href="https://drive.google.com/drive/u/0/folders/16nY9fwXG63XWDjFoGxP49nqADKEIH2jn">Cloud Sharing</a>
-        <!-- <a href="#" target="_blank" rel="noopener">Differential Geometry and Physics in Curved Spacetimes</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Relativity</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">General Physics A (Physics of Motion)</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">General Physics B (Electromagnetism)</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Quantum Mechanics</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Quantum Field Theory</a><br> -->
-        <!-- <a href="#" target="_blank" rel="noopener">Mathematical Methods in Physics</a> -->
-      </p>
-    </div>
-    
-
-    <div class="footer-section">
-      <p class="section-title">Graduation Thesis</p>
-      <p>
-        <a href="downloads/thesis/Masterthesis.pdf" target="_blank" rel="noopener">Masterthesis.pdf</a>
-        <!-- <a href="#" target="_blank" rel="noopener">Resources</a><br>
-        <a href="#" target="_blank" rel="noopener">Tensoria, MHD</a><br>
-        <a href="#" target="_blank" rel="noopener">Post Newtonian Gravity Calculations</a><br>
-        <a href="#" target="_blank" rel="noopener">Blog</a> -->
-      </p>
-    </div>
-
-    <div class="footer-section">
-      <!-- <p class="section-title">Amateur Astronomy</p>
-      <p><a href="#" target="_blank" rel="noopener">Resources</a></p> -->
-    </div>
-
-    <div class="footer-section">
-      <p class="section-title">Published journals</p>
-      <p>
-        <a href="https://www.sciencedirect.com/science/article/abs/pii/S0577907325003016" target="_blank" rel="noopener"> Chinese Journal of Physics Volume 97, October 2025, Pages 1316-1327 </a><br>
-        <!-- <a href="#" target="_blank" rel="noopener">N.W. Arizona/S. Utah: Summer 2011</a> -->
-      </p>
-    </div>
-  </div>
-</footer>
-
-
-
-
-
-  
 </body>
 </html>
