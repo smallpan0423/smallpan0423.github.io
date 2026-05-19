@@ -3,225 +3,174 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cin-Hua — Theoretical Physics</title>
+  <title>Cin-Hua Pan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Spectral+SC:wght@400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream: #F5F2EC;
-      --warm-white: #FDFCF9;
-      --ink: #1A1714;
-      --ink-mid: #4A4540;
-      --ink-light: #8C8580;
-      --accent: #2D5016;
-      --accent-warm: #8B4513;
-      --accent-rust: #C4622D;
-      --rule: #D8D3CB;
-      --highlight: #EDE8DF;
+      --bg:    #F7F4EE;
+      --ink:   #1C1917;
+      --ink-2: #57534E;
+      --ink-3: #A8A29E;
+      --rule:  #E2DDD6;
+      --max:   860px;
     }
 
-    html { scroll-behavior: smooth; }
+    html, body { min-height: 100%; }
 
     body {
-      background: var(--cream);
+      background: var(--bg);
       color: var(--ink);
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: 18px;
-      line-height: 1.7;
-      min-height: 100vh;
-    }
-
-    /* ── Side Nav ── */
-    .sidenav {
-      position: fixed;
-      left: 0; top: 0;
-      width: 64px;
-      height: 100vh;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 19px;
+      line-height: 1.65;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      width: 100%;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: center;
+    }
+    .top-bar-inner {
+      width: 100%;
+      max-width: var(--max);
+      padding: 1.1rem 2rem;
+      display: flex;
       justify-content: space-between;
-      padding: 2.5rem 0;
-      border-right: 1px solid var(--rule);
-      background: var(--warm-white);
-      z-index: 100;
-    }
-
-    .sidenav-logo {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.15em;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      transform: rotate(180deg);
-      text-transform: uppercase;
-      opacity: 0.7;
-    }
-
-    .sidenav-links {
-      display: flex;
-      flex-direction: column;
-      gap: 1.8rem;
       align-items: center;
     }
-
-    .sidenav-links a {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.15em;
+    .top-bar-name {
+      font-family: 'Spectral SC', serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--ink-light);
-      text-decoration: none;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-      transition: color 0.2s;
+      color: var(--ink-2);
     }
-
-    .sidenav-links a:hover { color: var(--accent); }
-
-    .sidenav-year {
+    .top-bar-nav { display: flex; gap: 2rem; }
+    .top-bar-nav a {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
-      color: var(--ink-light);
-      opacity: 0.5;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-decoration: none;
+      transition: color 0.2s;
     }
+    .top-bar-nav a:hover { color: var(--ink); }
 
-    /* ── Main Content ── */
-    main {
-      margin-left: 64px;
-      padding: 0 5rem 8rem 5rem;
-    }
-
-    .content-wrap {
-      max-width: 820px;
+    /* ── Page wrap ── */
+    .page {
+      width: 100%;
+      max-width: var(--max);
+      padding: 0 2rem 8rem;
     }
 
     /* ── Hero ── */
     .hero {
-      padding: 7rem 0 4rem;
+      padding: 7rem 0 5rem;
       border-bottom: 1px solid var(--rule);
-      margin-bottom: 5rem;
     }
-
-    .hero-label {
+    .hero-tag {
       font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 28px; height: 1px;
+      background: var(--ink-3);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .hero-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-size: clamp(4.5rem, 10vw, 8.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 3rem;
+    }
+    .hero-name em { font-style: italic; font-weight: 300; }
+    .hero-foot {
+      display: flex;
+      border-top: 1px solid var(--rule);
+      padding-top: 2rem;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .hero-foot-item {
+      flex: 1;
+      min-width: 170px;
+      padding-right: 2rem;
+    }
+    .hero-foot-item + .hero-foot-item {
+      border-left: 1px solid var(--rule);
+      padding-left: 2rem;
+      padding-right: 0;
+    }
+    .foot-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .foot-val { font-size: 15px; color: var(--ink-2); line-height: 1.45; }
+
+    /* ── Sections ── */
+    .section {
+      padding: 4.5rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: 1.2rem;
+      margin-bottom: 3rem;
+    }
+    .sec-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-3);
+    }
+    .sec-title {
+      font-family: 'Spectral SC', serif;
       font-size: 11px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    .hero-label::after {
-      content: '';
-      display: inline-block;
-      width: 2.5rem;
-      height: 1px;
-      background: var(--accent);
-      opacity: 0.5;
-    }
-
-    h1 {
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: clamp(4rem, 9vw, 8rem);
-      font-weight: 400;
-      line-height: 0.95;
-      letter-spacing: -0.03em;
       color: var(--ink);
-      margin-bottom: 2.5rem;
-    }
-
-    h1 em {
-      font-style: italic;
-      color: var(--ink-mid);
-    }
-
-    .hero-bottom {
-      display: flex;
-      gap: 4rem;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .hero-subtitle {
-      flex: 1;
-      min-width: 220px;
-      color: var(--ink-mid);
-      font-size: 17px;
-      line-height: 1.8;
-    }
-
-    .hero-meta {
-      display: flex;
-      gap: 3rem;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
-
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .meta-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-
-    .meta-value {
-      font-size: 14px;
-      color: var(--ink-mid);
-    }
-
-    /* ── Sections ── */
-    section {
-      margin-bottom: 5rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .section-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--ink-light);
-      letter-spacing: 0.1em;
-      flex-shrink: 0;
-    }
-
-    h2 {
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      color: var(--ink);
-      letter-spacing: -0.01em;
+      font-weight: 600;
     }
 
     /* ── About ── */
-    .about-text p {
-      margin-bottom: 1.2rem;
-      color: var(--ink-mid);
-      font-size: 17px;
+    .about-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
     }
-
+    .about-text p {
+      font-size: 18px;
+      color: var(--ink-2);
+      margin-bottom: 1.1rem;
+      line-height: 1.75;
+    }
     .about-text a {
       color: var(--ink);
       text-decoration: underline;
@@ -229,397 +178,337 @@
       text-underline-offset: 3px;
       transition: text-decoration-color 0.2s;
     }
-    .about-text a:hover { text-decoration-color: var(--accent); color: var(--accent); }
+    .about-text a:hover { text-decoration-color: var(--ink); }
+    .about-sig { font-size: 15px; font-style: italic; color: var(--ink-3); margin-top: 1.8rem; }
+    .about-aside {
+      border-left: 1px solid var(--rule);
+      padding-left: 3rem;
+    }
+    .aside-block { margin-bottom: 2.2rem; }
+    .aside-block:last-child { margin-bottom: 0; }
+    .aside-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .aside-val { font-size: 16px; color: var(--ink-2); line-height: 1.5; }
 
     /* ── Publications ── */
-    .pub-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
     .pub-item {
-      padding: 1.5rem 0;
-      border-top: 1px solid var(--rule);
       display: grid;
-      grid-template-columns: 2rem 1fr;
-      gap: 0 1.5rem;
-      align-items: start;
+      grid-template-columns: 3rem 1fr auto;
+      gap: 0 2rem;
+      align-items: center;
+      padding: 1.8rem 0;
+      border-top: 1px solid var(--rule);
     }
-
     .pub-item:last-child { border-bottom: 1px solid var(--rule); }
-
-    .pub-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--ink-light);
-      padding-top: 0.2rem;
-    }
-
-    .pub-title {
-      font-style: italic;
-      font-size: 17px;
-      margin-bottom: 0.3rem;
-      color: var(--ink);
-    }
-
-    .pub-journal {
-      font-family: 'Outfit', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--ink-light);
-      letter-spacing: 0.02em;
-    }
-
+    .pub-n { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-3); }
+    .pub-title { font-style: italic; font-size: 18px; color: var(--ink); margin-bottom: 0.25rem; }
+    .pub-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-3); }
     .pub-link {
-      display: inline-block;
-      margin-top: 0.6rem;
       font-family: 'DM Mono', monospace;
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--ink);
       text-decoration: none;
-      padding: 0.3rem 0.7rem;
-      border: 1px solid var(--accent);
-      border-radius: 2px;
-      transition: background 0.15s, color 0.15s;
+      border: 1px solid var(--rule);
+      padding: 0.45rem 0.9rem;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
+    .pub-link:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
-    .pub-link:hover {
-      background: var(--accent);
-      color: var(--warm-white);
-    }
-
-    /* ── Links / Resources ── */
+    /* ── Link grid ── */
     .link-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1px;
-      background: var(--rule);
+      grid-template-columns: repeat(2, 1fr);
       border: 1px solid var(--rule);
     }
-
     .link-card {
-      background: var(--warm-white);
-      padding: 1.5rem 1.6rem;
+      padding: 2rem 2.2rem;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
       transition: background 0.15s;
     }
-
-    .link-card:hover { background: var(--highlight); }
-
-    .link-card-label {
+    .link-card:nth-child(2n)       { border-right: none; }
+    .link-card:nth-last-child(-n+2){ border-bottom: none; }
+    .link-card:hover { background: #EFEBE3; }
+    .link-cat {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--ink-light);
+      color: var(--ink-3);
     }
-
-    .link-card-title {
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: 16px;
-      color: var(--ink);
-      line-height: 1.4;
-    }
-
-    .link-card-arrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      color: var(--ink-light);
-      margin-top: 0.5rem;
-      transition: transform 0.15s, color 0.15s;
+    .link-title { font-size: 18px; color: var(--ink); }
+    .link-arrow {
+      font-size: 15px;
+      color: var(--ink-3);
+      margin-top: 0.7rem;
       display: inline-block;
+      transition: transform 0.15s, color 0.15s;
     }
-
-    .link-card:hover .link-card-arrow {
-      transform: translate(3px, -3px);
-      color: var(--accent);
-    }
-
-    /* ── Hero Photo ── */
-    .photo-strip {
-      margin: 4rem 0;
-      position: relative;
-      overflow: hidden;
-      height: 320px;
-      background: var(--highlight);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .photo-strip img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 30%;
-      display: block;
-      filter: sepia(8%) contrast(1.04);
-    }
-
-    .photo-caption {
-      position: absolute;
-      bottom: 1rem;
-      right: 1.5rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-    }
+    .link-card:hover .link-arrow { transform: translate(4px,-4px); color: var(--ink); }
 
     /* ── Contact ── */
-    .contact-block {
-      padding: 2.5rem;
-      background: var(--ink);
-      color: var(--cream);
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
-
-    .contact-block .contact-label {
+    .contact-left { padding-right: 4rem; border-right: 1px solid var(--rule); }
+    .contact-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--ink-light);
+      color: var(--ink-3);
+      display: block;
       margin-bottom: 0.6rem;
     }
-
-    .contact-email {
-      font-family: 'EB Garamond', Georgia, serif;
-      font-size: 1.4rem;
-      font-style: italic;
-      color: var(--cream);
-      letter-spacing: 0.02em;
-    }
-
-    .contact-note {
-      margin-top: 1rem;
-      font-size: 14px;
-      color: rgba(245,242,236,0.45);
-      font-family: 'Outfit', sans-serif;
-      font-weight: 300;
-    }
-
-    /* ── Footer ── */
-    footer {
-      margin-left: 64px;
-      border-top: 1px solid var(--rule);
-      padding: 2rem 4rem 2rem 5rem;
+    .contact-email { font-size: 1.2rem; font-style: italic; color: var(--ink); }
+    .contact-note { margin-top: 1rem; font-size: 15px; color: var(--ink-3); line-height: 1.6; }
+    .contact-right { padding-left: 4rem; }
+    .contact-link {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .footer-name {
-      font-family: 'EB Garamond', Georgia, serif;
-      font-style: italic;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--rule);
+      text-decoration: none;
+      color: var(--ink-2);
       font-size: 15px;
-      color: var(--ink-light);
+      transition: color 0.15s;
     }
+    .contact-link:first-child { border-top: 1px solid var(--rule); }
+    .contact-link:hover { color: var(--ink); }
+    .contact-link span { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-3); }
 
-    .footer-links {
+    /* ── Footer ── */
+    .footer-bar {
+      width: 100%;
+      border-top: 1px solid var(--rule);
       display: flex;
-      gap: 1.5rem;
+      justify-content: center;
+      margin-top: auto;
     }
-
-    .footer-links a {
+    .footer-inner {
+      width: 100%;
+      max-width: var(--max);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-3); }
+    .footer-ext { display: flex; gap: 2rem; }
+    .footer-ext a {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--ink-light);
+      color: var(--ink-3);
       text-decoration: none;
       transition: color 0.2s;
     }
-
-    .footer-links a:hover { color: var(--accent); }
-
-    /* ── Signature ── */
-    .sig-line {
-      font-style: italic;
-      color: var(--ink-light);
-      margin-top: 1.5rem;
-      font-size: 16px;
-    }
+    .footer-ext a:hover { color: var(--ink); }
 
     /* ── Animations ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .hero > * { animation: fadeUp 0.7s ease both; }
-    .hero-label   { animation-delay: 0.05s; }
-    .hero h1      { animation-delay: 0.15s; }
-    .hero-bottom  { animation-delay: 0.28s; }
+    .hero-tag  { animation: rise 0.7s ease both 0.05s; }
+    .hero-name { animation: rise 0.7s ease both 0.18s; }
+    .hero-foot { animation: rise 0.7s ease both 0.32s; }
 
     /* ── Responsive ── */
-    @media (max-width: 680px) {
-      .sidenav { display: none; }
-      main { margin-left: 0; padding: 0 1.5rem 5rem; }
-      footer { margin-left: 0; padding: 1.5rem; }
-      .hero { padding: 3.5rem 0 2.5rem; }
-      .hero-bottom { flex-direction: column; gap: 1.5rem; }
-      .hero-meta { gap: 1.5rem; }
-      h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 640px) {
+      .top-bar-nav { display: none; }
+      .page { padding: 0 1.4rem 5rem; }
+      .hero { padding: 4rem 0 3rem; }
+      .hero-name { font-size: 4rem; margin-bottom: 2rem; }
+      .hero-foot { gap: 1.2rem; }
+      .hero-foot-item + .hero-foot-item { border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+      .about-body { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-aside { border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 2rem; }
+      .pub-item { grid-template-columns: 2rem 1fr; }
+      .pub-link { display: none; }
       .link-grid { grid-template-columns: 1fr; }
+      .link-card { border-right: none !important; }
+      .link-card:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule) !important; }
+      .link-card:last-child { border-bottom: none !important; }
+      .contact-wrap { grid-template-columns: 1fr; }
+      .contact-left { border-right: none; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 2.5rem; margin-bottom: 2.5rem; }
+      .contact-right { padding-left: 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Side Navigation -->
-  <nav class="sidenav" aria-label="Site navigation">
-    <span class="sidenav-logo">Cin-Hua</span>
-    <div class="sidenav-links">
-      <a href="#about">About</a>
-      <a href="#publications">Papers</a>
-      <a href="#links">Links</a>
-      <a href="#contact">Contact</a>
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <span class="top-bar-name">Cin-Hua Pan</span>
+      <nav class="top-bar-nav">
+        <a href="#about">About</a>
+        <a href="#publications">Papers</a>
+        <a href="#links">Links</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </div>
-    <span class="sidenav-year">NCU · TW</span>
-  </nav>
+  </header>
 
-  <!-- Main -->
-  <main>
+  <main class="page">
 
     <!-- Hero -->
-    <div class="hero" id="top">
-      <div class="hero-label">Ph.D. Student · Theoretical Physics</div>
-      <h1>Cin-Hua <em>Pan</em></h1>
-      <div class="hero-bottom">
-        <p class="hero-subtitle">
-          Studying statistical, nonlinear, and biological physics at National Central University.
-          Amateur pianist.
-        </p>
-        <div class="hero-meta">
-          <div class="meta-item">
-            <span class="meta-label">Affiliation</span>
-            <span class="meta-value">Dept. of Physics, NCU</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Research Group</span>
-            <span class="meta-value">Statistical & Nonlinear Physics</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Location</span>
-            <span class="meta-value">Taoyuan, Taiwan</span>
-          </div>
+    <div class="hero">
+      <div class="hero-tag">Ph.D. Student · Theoretical Physics · NCU</div>
+      <h1 class="hero-name">Cin-Hua<br><em>Pan</em></h1>
+      <div class="hero-foot">
+        <div class="hero-foot-item">
+          <span class="foot-label">Affiliation</span>
+          <span class="foot-val">Dept. of Physics<br>National Central University</span>
+        </div>
+        <div class="hero-foot-item">
+          <span class="foot-label">Research Group</span>
+          <span class="foot-val">Statistical, Nonlinear<br>&amp; Bio Physics</span>
+        </div>
+        <div class="hero-foot-item">
+          <span class="foot-label">Location</span>
+          <span class="foot-val">Taoyuan, Taiwan</span>
         </div>
       </div>
     </div>
 
-    <!-- Photo -->
-    <div class="photo-strip">
-      <img src="downloads/InShot_20251012_153401494_1.jpg" alt="Landscape photo by Cin-Hua" />
-      <span class="photo-caption">Photography / 2025</span>
-    </div>
-
-    <div class="content-wrap">
-
     <!-- About -->
-    <section id="about">
-      <div class="section-header">
-        <span class="section-num">01</span>
-        <h2>About</h2>
+    <section class="section" id="about">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <span class="sec-title">About</span>
       </div>
-      <div class="about-text">
-        <p>
-          I am a Ph.D. student in theoretical physics and an amateur piano enthusiast.
-        </p>
-        <p>
-          I am a student at the
-          <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department of Physics</a>
-          at National Central University (NCU) in Taoyuan, Taiwan — a member of the
-          <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">Statistical, Nonlinear and Bio Physics Research Group</a>
-          and the
-          <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">Center for Complex Systems</a>.
-        </p>
-        <p class="sig-line">— Cin-Hua</p>
+      <div class="about-body">
+        <div class="about-text">
+          <p>I am a Ph.D. student in theoretical physics and an amateur piano enthusiast.</p>
+          <p>
+            I study at the
+            <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department of Physics</a>
+            at National Central University in Taoyuan, Taiwan — a member of the
+            <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">Statistical, Nonlinear and Bio Physics Research Group</a>
+            and the
+            <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">Center for Complex Systems</a>.
+          </p>
+          <p class="about-sig">— Cin-Hua</p>
+        </div>
+        <div class="about-aside">
+          <div class="aside-block">
+            <span class="aside-label">Research Interests</span>
+            <span class="aside-val">Statistical mechanics<br>Nonlinear dynamics<br>Biological physics</span>
+          </div>
+          <div class="aside-block">
+            <span class="aside-label">Outside the Lab</span>
+            <span class="aside-val">Amateur pianist</span>
+          </div>
+          <div class="aside-block">
+            <span class="aside-label">Center</span>
+            <span class="aside-val">Center for Complex Systems</span>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Publications -->
-    <section id="publications">
-      <div class="section-header">
-        <span class="section-num">02</span>
-        <h2>Publications</h2>
+    <section class="section" id="publications">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <span class="sec-title">Publications</span>
       </div>
-      <ul class="pub-list">
-        <li class="pub-item">
-          <span class="pub-num">01</span>
-          <div>
-            <p class="pub-title">Statistical and Nonlinear Physics — Research Article</p>
-            <p class="pub-journal">Chinese Journal of Physics · Vol. 97 · Oct. 2025 · pp. 1316–1327</p>
-            <a class="pub-link" href="https://www.sciencedirect.com/science/article/abs/pii/S0577907325003016" target="_blank" rel="noopener">Read →</a>
-          </div>
-        </li>
-      </ul>
+      <div class="pub-item">
+        <span class="pub-n">01</span>
+        <div>
+          <p class="pub-title">Research Article in Statistical &amp; Nonlinear Physics</p>
+          <p class="pub-meta">Chinese Journal of Physics · Vol. 97 · Oct. 2025 · pp. 1316–1327</p>
+        </div>
+        <a class="pub-link" href="https://www.sciencedirect.com/science/article/abs/pii/S0577907325003016" target="_blank" rel="noopener">Read ↗</a>
+      </div>
     </section>
 
     <!-- Links -->
-    <section id="links">
-      <div class="section-header">
-        <span class="section-num">03</span>
-        <h2>Resources &amp; Links</h2>
+    <section class="section" id="links">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <span class="sec-title">Resources &amp; Links</span>
       </div>
       <div class="link-grid">
         <a class="link-card" href="resources.html">
-          <span class="link-card-label">Physics</span>
-          <span class="link-card-title">Study Resources</span>
-          <span class="link-card-arrow">↗</span>
+          <span class="link-cat">Physics</span>
+          <span class="link-title">Study Resources</span>
+          <span class="link-arrow">↗</span>
         </a>
         <a class="link-card" href="downloads/thesis/Masterthesis.pdf" target="_blank" rel="noopener">
-          <span class="link-card-label">Thesis</span>
-          <span class="link-card-title">Master's Thesis (PDF)</span>
-          <span class="link-card-arrow">↗</span>
+          <span class="link-cat">Thesis</span>
+          <span class="link-title">Master's Thesis (PDF)</span>
+          <span class="link-arrow">↗</span>
         </a>
-        <a class="link-card" href="https://youtube.com/channel/UCSeIhm6RlVRGaIzaIqzET_Q?si=vPo59W2YYRmdhA56" target="_blank" rel="noopener">
-          <span class="link-card-label">Piano / Music</span>
-          <span class="link-card-title">YouTube Channel</span>
-          <span class="link-card-arrow">↗</span>
+        <a class="link-card" href="https://youtube.com/channel/UCSeIhm6RlVRGaIzaIqzET_Q" target="_blank" rel="noopener">
+          <span class="link-cat">Music</span>
+          <span class="link-title">YouTube Channel</span>
+          <span class="link-arrow">↗</span>
         </a>
         <a class="link-card" href="https://drive.google.com/drive/u/0/folders/16nY9fwXG63XWDjFoGxP49nqADKEIH2jn" target="_blank" rel="noopener">
-          <span class="link-card-label">Files</span>
-          <span class="link-card-title">Cloud Sharing</span>
-          <span class="link-card-arrow">↗</span>
+          <span class="link-cat">Files</span>
+          <span class="link-title">Cloud Sharing</span>
+          <span class="link-arrow">↗</span>
         </a>
       </div>
     </section>
 
     <!-- Contact -->
-    <section id="contact">
-      <div class="section-header">
-        <span class="section-num">04</span>
-        <h2>Contact</h2>
+    <section class="section" id="contact">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <span class="sec-title">Contact</span>
       </div>
-      <div class="contact-block">
-        <p class="contact-label">Email</p>
-        <p class="contact-email">andy0929539033@gmail.com</p>
-        <p class="contact-note">Feel free to reach out regarding research, collaboration, or questions.</p>
+      <div class="contact-wrap">
+        <div class="contact-left">
+          <span class="contact-label">Email</span>
+          <p class="contact-email">andy0929539033@gmail.com</p>
+          <p class="contact-note">Feel free to reach out regarding research, collaboration, or any questions.</p>
+        </div>
+        <div class="contact-right">
+          <a class="contact-link" href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">
+            Department of Physics <span>↗</span>
+          </a>
+          <a class="contact-link" href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">
+            Research Group <span>↗</span>
+          </a>
+          <a class="contact-link" href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">
+            Center for Complex Systems <span>↗</span>
+          </a>
+        </div>
       </div>
     </section>
 
-    </div><!-- /content-wrap -->
-
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <span class="footer-name">Cin-Hua · NCU Physics</span>
-    <nav class="footer-links" aria-label="Footer links">
-      <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">Department</a>
-      <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">CCS</a>
-      <a href="https://pikyinlai.wixsite.com/lai_research_group" target="_blank" rel="noopener">Lab</a>
-    </nav>
+  <footer class="footer-bar">
+    <div class="footer-inner">
+      <span class="footer-copy">Cin-Hua Pan · NCU Physics · Taoyuan, Taiwan</span>
+      <div class="footer-ext">
+        <a href="https://www.phy.ncu.edu.tw/" target="_blank" rel="noopener">NCU Physics</a>
+        <a href="https://www.science.ncu.edu.tw/ccs" target="_blank" rel="noopener">CCS</a>
+      </div>
+    </div>
   </footer>
 
 </body>
