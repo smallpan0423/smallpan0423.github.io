@@ -128,9 +128,16 @@
       opacity: 0.5;
     }
 
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
     h1 {
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-size: clamp(2.8rem, 5vw, 4.8rem);
       font-weight: 400;
       line-height: 1.05;
       letter-spacing: -0.01em;
@@ -143,25 +150,34 @@
       color: var(--ink-mid);
     }
 
+    .hero-right {
+      padding-top: 0.5rem;
+    }
+
     .hero-subtitle {
-      margin-top: 2rem;
-      max-width: 480px;
       color: var(--ink-mid);
       font-size: 17px;
-      line-height: 1.75;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .hero-divider {
+      width: 2rem;
+      height: 1px;
+      background: var(--rule);
+      margin-bottom: 1.5rem;
     }
 
     .hero-meta {
-      margin-top: 2.5rem;
       display: flex;
-      gap: 2.5rem;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 1.2rem;
     }
 
     .meta-item {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.15rem;
     }
 
     .meta-label {
@@ -449,10 +465,9 @@
     .hero > * {
       animation: fadeUp 0.7s ease both;
     }
-    .hero-label  { animation-delay: 0.05s; }
-    .hero h1     { animation-delay: 0.15s; }
-    .hero-subtitle { animation-delay: 0.25s; }
-    .hero-meta   { animation-delay: 0.35s; }
+    .hero-label    { animation-delay: 0.05s; }
+    .hero-inner    { animation-delay: 0.15s; }
+    .hero-right    { animation-delay: 0.25s; }
 
     /* ── Responsive ── */
     @media (max-width: 680px) {
@@ -460,6 +475,7 @@
       main { margin-left: 0; padding: 0 1.5rem 5rem; }
       footer { margin-left: 0; padding: 1.5rem; }
       .hero { padding: 3.5rem 0 2.5rem; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
       h1 { font-size: 3rem; }
       .link-grid { grid-template-columns: 1fr; }
     }
@@ -485,23 +501,30 @@
     <!-- Hero -->
     <div class="hero" id="top">
       <div class="hero-label">Ph.D. Student · Theoretical Physics</div>
-      <h1>Cin-Hua<br><em>Pan</em></h1>
-      <p class="hero-subtitle">
-        Studying statistical, nonlinear, and biological physics at National Central University.
-        Amateur pianist.
-      </p>
-      <div class="hero-meta">
-        <div class="meta-item">
-          <span class="meta-label">Affiliation</span>
-          <span class="meta-value">Dept. of Physics, NCU</span>
+      <div class="hero-inner">
+        <div class="hero-left">
+          <h1>Cin-Hua<br><em>Pan</em></h1>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Research Group</span>
-          <span class="meta-value">Statistical & Nonlinear Physics</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Location</span>
-          <span class="meta-value">Taoyuan, Taiwan</span>
+        <div class="hero-right">
+          <p class="hero-subtitle">
+            Studying statistical, nonlinear, and biological physics at National Central University.
+            Amateur pianist.
+          </p>
+          <div class="hero-divider"></div>
+          <div class="hero-meta">
+            <div class="meta-item">
+              <span class="meta-label">Affiliation</span>
+              <span class="meta-value">Dept. of Physics, NCU</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Research Group</span>
+              <span class="meta-value">Statistical & Nonlinear Physics</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Location</span>
+              <span class="meta-value">Taoyuan, Taiwan</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
